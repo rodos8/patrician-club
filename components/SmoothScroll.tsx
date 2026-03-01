@@ -28,12 +28,12 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     lenis.on('scroll', ScrollTrigger.update);
 
     ScrollTrigger.scrollerProxy(document.body, {
-      scrollTop(value) {
-        if (arguments.length) {
-          lenis.scrollTo(value);
-        }
-        return lenis.scroll;
-      },
+      scrollTop(value?: number) {
+  if (arguments.length && value !== undefined) {
+    lenis.scrollTo(value);
+  }
+  return lenis.scroll;
+},
       getBoundingClientRect() {
         return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
       },
