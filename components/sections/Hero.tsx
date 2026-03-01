@@ -29,10 +29,39 @@ export default function Hero() {
   return (
     <section ref={sectionRef} className="hero">
       <div className="container">
-        <div ref={el => itemsRef.current[0] = el} className="hero__subtitle">Закрытый клуб знакомств</div>
-        <h1 ref={el => itemsRef.current[1] = el} className="hero__title">Высокие стандарты.<br />Абсолютная честность</h1>
-        <div ref={el => itemsRef.current[2] = el}><GlassButton>Вступить в клуб</GlassButton></div>
-        <p ref={el => itemsRef.current[3] = el}><span>Эксклюзивно на IOS</span> Москва & Санкт-Петербург</p>
+      <div
+  ref={el => {
+    itemsRef.current[0] = el!;
+  }}
+  className="hero__subtitle"
+>
+  Закрытый клуб знакомств
+</div>
+
+<h1
+  ref={el => {
+    itemsRef.current[1] = el!;
+  }}
+  className="hero__title"
+>
+  Высокие стандарты.<br />Абсолютная честность
+</h1>
+
+<div
+  ref={el => {
+    itemsRef.current[2] = el!;
+  }}
+>
+  <GlassButton>Вступить в клуб</GlassButton>
+</div>
+
+<p
+  ref={el => {
+    itemsRef.current[3] = el!;
+  }}
+>
+  <span>Эксклюзивно на IOS</span> Москва & Санкт-Петербург
+</p>
       </div>
 
       <div className="hero__images">

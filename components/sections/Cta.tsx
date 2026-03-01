@@ -29,10 +29,32 @@ export default function Cta() {
   return (
     <section ref={sectionRef} className="cta">
       <div className="container">
-        <div ref={el => itemsRef.current[0] = el!} className="cta__title">Любовь - дело случая,<br />
-безопасность - дело принципа</div>
-        <div ref={el => itemsRef.current[1] = el!} className="cta__text">Высокие стандарты</div>
-        <div ref={el => itemsRef.current[2] = el!}><GlassButton>Вступить</GlassButton></div>
+       <div
+  ref={el => {
+    itemsRef.current[0] = el!;
+  }}
+  className="cta__title"
+>
+  Любовь - дело случая,<br />
+  безопасность - дело принципа
+</div>
+
+<div
+  ref={el => {
+    itemsRef.current[1] = el!;
+  }}
+  className="cta__text"
+>
+  Высокие стандарты
+</div>
+
+<div
+  ref={el => {
+    itemsRef.current[2] = el!;
+  }}
+>
+  <GlassButton>Вступить</GlassButton>
+</div>
       </div>
     </section>
   );
