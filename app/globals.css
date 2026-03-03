@@ -950,7 +950,7 @@ section .container {
     padding-top: 0;
   }
   section.cta {
-    padding-top: 30rem;
+    padding-top: 0rem;
   }
   section.cards,
   section.twomobile {
@@ -978,8 +978,7 @@ section .container {
     top: 2.989rem;
     left: 52rem;
   }
-  .cards,
-  .cta {
+  .cards {
     margin-top: 10rem;
   }
   .twomobile__list {
