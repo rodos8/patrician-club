@@ -605,6 +605,13 @@ section .container {
   border-image-repeat: stretch;
   margin-bottom: 1.6rem;
 }
+@media (max-width: 480px) {
+  .cards__list-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+}
 .cards__list-item-title {
   font-weight: 300;
   font-size: 18px;
