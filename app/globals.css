@@ -559,6 +559,15 @@ section .container {
   top: 2.989rem;
   left: 52rem;
 }
+.twomobile__block:nth-child(1) .twomobile__list-item:last-child {
+  text-align: start;
+}
+
+@media (max-width: 1024px) {
+  .twomobile__block:nth-child(1) .twomobile__list-item:last-child {
+    text-align: center;
+  }
+}
 
 /* Cards */
 .cards .container {
