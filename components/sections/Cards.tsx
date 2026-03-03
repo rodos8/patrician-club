@@ -41,8 +41,8 @@ export default function Cards() {
 
       gsap.set(validSvgs, {
         opacity: 0,
-        scale: 0.6,
-        y: 40,
+        scale: 1,
+        y: 0,
       });
 
       const svgTl = gsap.timeline({
@@ -68,7 +68,7 @@ export default function Cards() {
       gsap.fromTo(glowRef.current,
         { scale: 0.4, opacity: 0 },
         {
-          scale: 1.8,
+          scale: 1,
           opacity: 0.35,
           ease: 'none',
           scrollTrigger: {

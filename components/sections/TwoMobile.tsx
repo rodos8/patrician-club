@@ -10,9 +10,6 @@ gsap.registerPlugin(ScrollTrigger);
 export default function TwoMobile() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const leftBlock = useRef<HTMLDivElement>(null);
-  const rightBlock = useRef<HTMLDivElement>(null);
-
   const leftPhone = useRef<HTMLImageElement>(null);
   const rightPhone = useRef<HTMLImageElement>(null);
   const notification = useRef<HTMLImageElement>(null);
@@ -27,107 +24,77 @@ export default function TwoMobile() {
       const mm = gsap.matchMedia();
 
       /* ================= DESKTOP ================= */
-     mm.add('(min-width: 768px)', () => {
-        const tl = gsap.timeline({
+      mm.add('(min-width: 768px)', () => {
+        // Начальное состояние: телефоны слегка смещены и прозрачны
+        gsap.set(leftPhone.current, { x: -30, opacity: 0 });
+        gsap.set(rightPhone.current, { x: 30, opacity: 0 });
+        gsap.set(notification.current, { opacity: 0 }); // уведомление просто появляется
+        gsap.set([leftText.current, rightText.current], { opacity: 0 });
+
+        // Анимация при скролле
+        gsap.to(leftPhone.current, {
+          x: 0,
+          opacity: 1,
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: 'top 20%',
-            end: 'bottom 90%',
-            scrub: 3,
+            start: 'top bottom',
+            end: 'center center',
+            scrub: 2,
           },
+          ease: 'none',
         });
 
-        // Появление левого телефона
-        tl.from(leftPhone.current, {
-          y: 180,
-          scale: 0.85,
-          opacity: 0,
-          duration: 1.2,
-          ease: 'power3.out',
-        })
-          // Появление правого телефона (чуть позже)
-          .from(
-            rightPhone.current,
-            {
-              y: 200,
-              scale: 0.85,
-              opacity: 0,
-              duration: 1.2,
-              ease: 'power3.out',
-            },
-            '-=0.2'
-          )
-          // Появление уведомления (с лёгким пружинистым эффектом)
-          .from(
-            notification.current,
-            {
-              y: -80,
-              scale: 0.5,
-              opacity: 0,
-              ease: 'back.out(1.2)',
-              duration: 0.9,
-            },
-            '-=0.6'
-          )
-          // Текст теперь только появляется (без смещения X)
-          .from(
-            [leftText.current, rightText.current],
-            {
-              opacity: 0,
-              duration: 0.8,
-              ease: 'power2.out',
-            },
-            '-=0.4'
-          );
+        gsap.to(rightPhone.current, {
+          x: 0,
+          opacity: 1,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'center center',
+            scrub: 2,
+          },
+          ease: 'none',
+        });
+
+        // Уведомление и текст появляются чуть позже или одновременно
+        gsap.to(notification.current, {
+          opacity: 1,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'center center',
+            scrub: 2,
+          },
+          ease: 'none',
+        });
+
+        gsap.to([leftText.current, rightText.current], {
+          opacity: 1,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'center center',
+            scrub: 2,
+          },
+          ease: 'none',
+        });
       });
 
       /* ================= MOBILE ================= */
       mm.add('(max-width: 767px)', () => {
-        const tl = gsap.timeline({
+        // На мобильных можно оставить только появление без движения
+        gsap.set([leftPhone.current, rightPhone.current, notification.current, leftText.current, rightText.current], { opacity: 0 });
+
+        gsap.to([leftPhone.current, rightPhone.current, notification.current, leftText.current, rightText.current], {
+          opacity: 1,
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: 'top 100%',
-            end: 'bottom 90%',
-            scrub: 1,
+            start: 'top bottom',
+            end: 'center center',
+            scrub: 1.5,
           },
+          ease: 'none',
         });
-
-        tl.from(leftPhone.current, {
-          y: 80,
-          opacity: 0,
-          scale: 0.9,
-          ease: 'power3.out',
-        })
-          .from(
-            rightPhone.current,
-            {
-              y: 80,
-              opacity: 0,
-              scale: 0.9,
-              ease: 'power3.out',
-            },
-            '+=0.2'
-          )
-          .from(
-            notification.current,
-            {
-              y: 80,
-              scale: 0.6,
-              opacity: 0,
-              ease: 'back.out(1.2)',
-            },
-            '-=0.5'
-          )
-          // Текст на мобильных тоже без смещения
-          .from(
-            [leftText.current, rightText.current],
-            {
-              opacity: 0,
-              duration: 0.8,
-              ease: 'power2.out',
-            },
-            '-=0.3'
-          );
       });
 
       /* ================= PARALLAX ================= */
@@ -171,7 +138,7 @@ export default function TwoMobile() {
         <div className="twomobile__list">
 
           {/* LEFT BLOCK */}
-          <div ref={leftBlock} className="twomobile__block">
+          <div className="twomobile__block">
             <div className="twomobile__list-imgs">
               <Image ref={leftPhone} src="/img/ipone-1.png" alt="" width={634} height={634} />
             </div>
@@ -180,14 +147,13 @@ export default function TwoMobile() {
                 Общие<br />ценности
               </div>
               <div className="twomobile__list-item-text">
-                Фундамент для тех, кто строит
-совместное будущее
+                Фундамент для тех, кто строит совместное будущее
               </div>
             </div>
           </div>
 
           {/* RIGHT BLOCK */}
-          <div ref={rightBlock} className="twomobile__block">
+          <div className="twomobile__block">
             <div className="twomobile__list-imgs">
               <Image ref={rightPhone} src="/img/iphone-2.png" alt="" width={596} height={596} />
               <Image ref={notification} src="/img/screen.png" alt="" width={403} height={609} />
@@ -197,8 +163,7 @@ export default function TwoMobile() {
                 Медицинский<br />протокол
               </div>
               <div className="twomobile__list-item-text">
-               Обязательная верификация здоровья
-по 4 ключевым показателям
+                Обязательная верификация здоровья по 4 ключевым показателям
               </div>
             </div>
           </div>

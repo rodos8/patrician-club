@@ -816,7 +816,16 @@ section .container {
 
 /* Mobile (до 768px) */
 @media (max-width: 768px) {
-  /* Отключаем или сильно уменьшаем анимации для производительности */
+  .cta,
+  .hero {
+    height: 100vh;
+  }
+  .cta .container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+  }
   .gsap-mobile-disable {
     transform: none !important;
     opacity: 1 !important;
@@ -860,7 +869,7 @@ section .container {
     height: 30rem;
   }
   .cards__list-item {
-    max-width: 100%;
+    max-width: 33rem;
   }
   .cards__list-item-title {
     font-size: 1.8rem;
@@ -937,6 +946,7 @@ section .container {
     height: auto;
   }
   section {
+    height: auto;
     padding-top: 0;
   }
   section.cta {
@@ -958,6 +968,20 @@ section .container {
 }
 
 @media (max-width: 768px) {
+  section {
+    height: auto;
+  }
+  .twomobile__block:nth-child(2) .twomobile__list-imgs img:nth-child(1) {
+    width: 130%;
+    height: auto;
+    z-index: 1;
+    top: 2.989rem;
+    left: 52rem;
+  }
+  .cards,
+  .cta {
+    margin-top: 10rem;
+  }
   .twomobile__list {
     flex-direction: column;
     gap: 0;
