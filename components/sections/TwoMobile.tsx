@@ -27,7 +27,7 @@ export default function TwoMobile() {
       const mm = gsap.matchMedia();
 
       /* ================= DESKTOP ================= */
-      mm.add('(min-width: 768px)', () => {
+     mm.add('(min-width: 768px)', () => {
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -180,7 +180,8 @@ export default function TwoMobile() {
                 Общие<br />ценности
               </div>
               <div className="twomobile__list-item-text">
-                Фундамент для будущего
+                Фундамент для тех, кто строит
+совместное будущее
               </div>
             </div>
           </div>
@@ -196,7 +197,8 @@ export default function TwoMobile() {
                 Медицинский<br />протокол
               </div>
               <div className="twomobile__list-item-text">
-                Полная верификация
+               Обязательная верификация здоровья
+по 4 ключевым показателям
               </div>
             </div>
           </div>

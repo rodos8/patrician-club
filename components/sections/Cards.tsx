@@ -97,7 +97,7 @@ export default function Cards() {
             </div>
             <div className="cards__list-item-title">Качество важнее количества</div>
             <span/>
-            <p>До 5 анкет в сутки</p>
+            <p>Серьезные отношения, романтика, светское общение</p>
           </div>
 
           {/* CARD 2 */}
@@ -148,9 +148,9 @@ export default function Cards() {
 ))}
               </div>
             </div>
-             <div className="cards__list-item-title">Конфиденциальность</div>
+             <div className="cards__list-item-title">Без территориальных ограничений</div>
             <span/>
-            <p>Только статус</p>
+            <p>Основа - Москва и Санкт-Петербург. Общайтесь из любой точки России</p>
           </div>
 
           {/* CARD 3 */}
@@ -160,7 +160,7 @@ export default function Cards() {
             </div>
             <div className="cards__list-item-title">Конфиденциальность</div>
             <span/>
-            <p>Только статус</p>
+            <p>Без публикации медицинских документов. В профиле только статус</p>
           </div>
 
         </div>
