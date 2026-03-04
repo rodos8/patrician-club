@@ -1244,7 +1244,7 @@ section .container {
     top: auto !important;
     left: auto !important;
     right: auto !important;
-    transform: none !important;
+    /* transform: none !important; */
   }
 
   /* размеры */
