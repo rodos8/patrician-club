@@ -26,7 +26,16 @@ body {
   position: relative;
   overflow-x: hidden;
 }
-
+@media (max-width: 6000px) {
+  html {
+    font-size: 102.5%;
+  }
+}
+@media (max-width: 2300px) {
+  html {
+    font-size: 62.5%;
+  }
+}
 /* Fluid typography — ручное преобразование миксинов */
 @media (max-width: 1470px) {
   html {
@@ -232,6 +241,11 @@ img {
   display: block;
 }
 
+.logo__header svg {
+  width: 16.1rem;
+  height: 5.9rem;
+}
+
 .container {
   max-width: 144rem;
   margin: 0 auto;
@@ -252,7 +266,7 @@ section {
 }
 
 section .container {
-  padding-top: 30rem;
+  padding-top: 20rem;
 }
 
 /* Hero */
@@ -799,7 +813,21 @@ section .container {
   flex-direction: column;
   gap: 1.6rem;
 }
+.cards__svg-container div:nth-child(1) svg {
+  width: 1.5rem;
+  height: 1.7rem;
+}
+.cards__svg-container div:nth-child(2) svg {
+  width: 10.7rem;
+  height: 9rem;
+}
+.cards__svg-container div:nth-child(3) svg {
+  width: 10.4rem;
+  height: 7.8rem;
+}
 .cards__list-item img {
+  width: 33rem;
+  height: 33rem;
   border-radius: 2.4rem;
   border-left: 0.1rem solid transparent;
   border-right: 0.1rem solid transparent;
