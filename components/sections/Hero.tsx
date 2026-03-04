@@ -40,7 +40,7 @@ export default function Hero() {
         </div>
 
         <h1 ref={titleRef} className="hero__title">
-          Высокие стандарты.<br />Абсолютная честность
+          Высокие стандарты<br />Абсолютная честность
         </h1>
 
         <GlassButton ref={buttonRef}>Вступить в клуб</GlassButton>
