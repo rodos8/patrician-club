@@ -12,10 +12,12 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   const isAnimating = useRef(false);
   const targetsRef = useRef<HTMLElement[]>([]);
   const isMobileRef = useRef(false);
+  const touchStartYRef = useRef<number | null>(null);
+  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Обновление целей без изменения состояния
   const updateTargets = useCallback(() => {
-    const mobile = window.matchMedia('(max-width: 767px)').matches;
+    const mobile = window.matchMedia('(max-width: 980px)').matches;
     isMobileRef.current = mobile;
     
     if (mobile) {
@@ -48,12 +50,91 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     });
   }, []);
 
+  // Определение текущей видимой цели
+  const getCurrentIndex = useCallback(() => {
+    const targets = targetsRef.current;
+    if (targets.length === 0) return -1;
+    
+    return targets.findIndex((el) => {
+      const rect = el.getBoundingClientRect();
+      return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
+    });
+  }, []);
+
+  // Обработка свайпа
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    touchStartYRef.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    if (touchStartYRef.current === null) return;
+    if (isAnimating.current) return;
+
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchStartYRef.current - touchEndY;
+    
+    // Минимальное расстояние для свайпа (в пикселях)
+    const minSwipeDistance = 30;
+    
+    if (Math.abs(deltaY) < minSwipeDistance) {
+      touchStartYRef.current = null;
+      return;
+    }
+
+    const direction = deltaY > 0 ? 'down' : 'up';
+    const currentIndex = getCurrentIndex();
+    const targets = targetsRef.current;
+
+    if (currentIndex === -1) {
+      touchStartYRef.current = null;
+      return;
+    }
+
+    let targetIndex = currentIndex;
+    if (direction === 'down' && currentIndex < targets.length - 1) {
+      targetIndex = currentIndex + 1;
+    } else if (direction === 'up' && currentIndex > 0) {
+      targetIndex = currentIndex - 1;
+    }
+
+    if (targetIndex !== currentIndex) {
+      e.preventDefault();
+      goToTarget(targetIndex);
+    }
+
+    touchStartYRef.current = null;
+  }, [goToTarget, getCurrentIndex]);
+
+  // Обработчик колеса мыши (для десктопа)
+  const handleWheel = useCallback((e: WheelEvent) => {
+    const targets = targetsRef.current;
+    if (targets.length === 0) return;
+    if (isAnimating.current) return;
+
+    const direction = e.deltaY > 0 ? 'down' : 'up';
+    const currentIndex = getCurrentIndex();
+
+    if (currentIndex === -1) return;
+
+    let targetIndex = currentIndex;
+    if (direction === 'down' && currentIndex < targets.length - 1) {
+      targetIndex = currentIndex + 1;
+    } else if (direction === 'up' && currentIndex > 0) {
+      targetIndex = currentIndex - 1;
+    }
+
+    if (targetIndex !== currentIndex) {
+      e.preventDefault();
+      goToTarget(targetIndex);
+    }
+  }, [goToTarget, getCurrentIndex]);
+
   useEffect(() => {
     // Первичное обновление целей
     updateTargets();
 
     // Слушаем изменение размера экрана
-    const mql = window.matchMedia('(max-width: 767px)');
+    const mql = window.matchMedia('(max-width: 980px)');
     const handleChange = () => {
       updateTargets();
     };
@@ -71,42 +152,18 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       attributeFilter: ['class'],
     });
 
-    // Инициализация Lenis
+    // Инициализация Lenis с поддержкой touch
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      // smoothTouch: false, // Отключаем на тач-устройствах
+      touchMultiplier: 2, // Ускоряем реакцию на touch
     });
     lenisRef.current = lenis;
 
-    // Обработчик колеса мыши
-    const handleWheel = (e: WheelEvent) => {
-      const targets = targetsRef.current;
-      if (targets.length === 0) return;
-
-      if (isAnimating.current) return;
-
-      const direction = e.deltaY > 0 ? 'down' : 'up';
-
-      const currentIndex = targets.findIndex((el) => {
-        const rect = el.getBoundingClientRect();
-        return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
-      });
-
-      let targetIndex = currentIndex;
-      if (direction === 'down' && currentIndex < targets.length - 1) {
-        targetIndex = currentIndex + 1;
-      } else if (direction === 'up' && currentIndex > 0) {
-        targetIndex = currentIndex - 1;
-      }
-
-      if (targetIndex !== currentIndex && targetIndex >= 0) {
-        e.preventDefault();
-        goToTarget(targetIndex);
-      }
-    };
-
+    // Добавляем обработчики touch событий
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: false });
     window.addEventListener('wheel', handleWheel, { passive: false });
 
     // RAF для Lenis
@@ -132,11 +189,16 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
 
     return () => {
       lenis.destroy();
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
       window.removeEventListener('wheel', handleWheel);
       mql.removeEventListener('change', handleChange);
       observer.disconnect();
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
     };
-  }, [goToTarget, updateTargets]); // Зависимости стабильны
+  }, [handleTouchStart, handleTouchEnd, handleWheel, updateTargets]);
 
   return <>{children}</>;
 }

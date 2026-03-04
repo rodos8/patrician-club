@@ -280,6 +280,11 @@ section .container {
   z-index: 2;
   text-align: center;
 }
+@media (max-width: 480px) {
+  .hero .container {
+    margin: auto auto 14rem;
+  }
+}
 .hero .container > p {
   margin-top: 3.2rem;
   font-family: "Onest", serif;
@@ -1011,8 +1016,9 @@ section .container {
     text-align: center;
   }
   .cards__list {
-    flex-wrap: wrap;
     gap: 4rem;
+    flex-direction: column;
+    align-items: center;
   }
   .cards__list-item {
     max-width: 45%;
@@ -1172,8 +1178,9 @@ section .container {
   }
 }
 
-@media (max-width: 768px) {
-  section {
+@media (max-width: 980px) {
+  section.twomobile,
+  section.cards {
     height: auto;
   }
   .twomobile__block:nth-child(2) .twomobile__list-imgs img:nth-child(1) {
@@ -1263,7 +1270,7 @@ section .container {
     padding-top: 20rem;
   }
   .twomobile__block.snap-step {
-    padding-top: 13rem;
+    padding-top: 10rem;
   }
 }
 
