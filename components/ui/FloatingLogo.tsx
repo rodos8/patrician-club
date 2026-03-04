@@ -29,11 +29,12 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
   }, [currentSection]);
 
   return (
-    <div
+    <div 
+    className='logo__header'
       ref={logoRef}
       style={{
         position: 'fixed',
-        top: '6.4rem',
+        top: '0',
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 100,

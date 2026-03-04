@@ -7,19 +7,26 @@ import GlassButton from '@/components/ui/GlassButton';
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const itemsRef = useRef<any[]>([]);
+  const subtitleRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const textRef = useRef<HTMLParagraphElement>(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set(itemsRef.current, { opacity: 0, y: 40 });
+      // Анимируем элементы по отдельности, включая саму кнопку
+      gsap.set([subtitleRef.current, titleRef.current, buttonRef.current, textRef.current], {
+        opacity: 0,
+        y: 40,
+      });
 
-      gsap.to(itemsRef.current, {
+      gsap.to([subtitleRef.current, titleRef.current, buttonRef.current, textRef.current], {
         opacity: 1,
         y: 0,
-        duration: 1.2,
+        duration: 1.6,
         stagger: 0.15,
         ease: 'power3.out',
-        delay: 0.3,
+        delay: 0.2,
       });
     }, sectionRef);
 
@@ -27,46 +34,26 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="hero">
+    <section ref={sectionRef} className="hero snap-section h-screen">
       <div className="container">
-      <div
-  ref={el => {
-    itemsRef.current[0] = el!;
-  }}
-  className="hero__subtitle"
->
-  Закрытый клуб знакомств
-</div>
+        <div ref={subtitleRef} className="hero__subtitle">
+          Закрытый клуб знакомств
+        </div>
 
-<h1
-  ref={el => {
-    itemsRef.current[1] = el!;
-  }}
-  className="hero__title"
->
-  Высокие стандарты.<br />Абсолютная честность
-</h1>
+        <h1 ref={titleRef} className="hero__title">
+          Высокие стандарты.<br />Абсолютная честность
+        </h1>
 
-<div
-  ref={el => {
-    itemsRef.current[2] = el!;
-  }}
->
-  <GlassButton>Вступить в клуб</GlassButton>
-</div>
+        {/* Теперь ref вешаем прямо на кнопку */}
+        <GlassButton ref={buttonRef}>Вступить в клуб</GlassButton>
 
-<p
-  ref={el => {
-    itemsRef.current[3] = el!;
-  }}
->
-  <span>Эксклюзивно на IOS</span> Москва & Санкт-Петербург
-</p>
+        <p ref={textRef}>
+          <span>Эксклюзивно на IOS</span> Москва & Санкт-Петербург
+        </p>
       </div>
 
       <div className="hero__images">
         <Image src="/img/hero.png" alt="Hero" fill priority />
-        {/* <Image src="/img/image-wrapper (1).png" alt="Overlay" fill priority /> */}
       </div>
     </section>
   );

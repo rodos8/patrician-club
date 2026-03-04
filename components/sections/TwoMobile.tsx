@@ -25,15 +25,14 @@ export default function TwoMobile() {
 
       /* ================= DESKTOP ================= */
       mm.add('(min-width: 768px)', () => {
-        // Начальное состояние: телефоны слегка смещены и прозрачны
-        gsap.set(leftPhone.current, { x: -30, opacity: 0 });
-        gsap.set(rightPhone.current, { x: 30, opacity: 0 });
+        // Начальное состояние: телефоны прозрачны, но без смещения (чтобы не конфликтовать с параллаксом)
+        gsap.set(leftPhone.current, { opacity: 0 });
+        gsap.set(rightPhone.current, { opacity: 0 });
         gsap.set(notification.current, { opacity: 0 });
         gsap.set([leftText.current, rightText.current], { opacity: 0 });
 
-        // Анимация при скролле
+        // Анимация при скролле — только opacity, x управляется параллаксом
         gsap.to(leftPhone.current, {
-          x: 0,
           opacity: 1,
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -45,7 +44,6 @@ export default function TwoMobile() {
         });
 
         gsap.to(rightPhone.current, {
-          x: 0,
           opacity: 1,
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -115,26 +113,21 @@ export default function TwoMobile() {
     return () => ctx.revert();
   }, []);
 
-  // ========== PARALLAX EFFECT (плавный, с lerp) ==========
+  // ========== PARALLAX EFFECT (плавный, с пониженным lerp для инерции) ==========
   useLayoutEffect(() => {
-    // Целевые значения (от -0.5 до 0.5)
     const targetX = { current: 0 };
     const targetY = { current: 0 };
-    // Текущие значения для интерполяции
     const currentX = { current: 0 };
     const currentY = { current: 0 };
 
-    // Множители для каждого элемента
     const multipliers = {
       left: { x: 20, y: 20 },
       right: { x: -10, y: -20 },
       notif: { x: -20, y: -35 },
     };
 
-    // Определяем тип устройства для возможного уменьшения интенсивности
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     if (isMobile) {
-      // Можно уменьшить амплитуду на мобильных, чтобы не перекрывать контент
       multipliers.left.x *= 0.5;
       multipliers.left.y *= 0.5;
       multipliers.right.x *= 0.5;
@@ -149,36 +142,30 @@ export default function TwoMobile() {
         if (e.touches.length === 0) return;
         clientX = e.touches[0].clientX;
         clientY = e.touches[0].clientY;
-        // Предотвращаем скролл страницы при касании внутри секции (если нужно)
         e.preventDefault();
       } else {
         clientX = e.clientX;
         clientY = e.clientY;
       }
-      // Нормализуем координаты относительно окна
       targetX.current = (clientX / window.innerWidth - 0.5);
       targetY.current = (clientY / window.innerHeight - 0.5);
     };
 
-    // Добавляем слушатели в зависимости от устройства
     if (isMobile) {
       window.addEventListener('touchmove', handleMove, { passive: false });
-      // Также можно добавить touchstart, чтобы сразу начать отслеживание
       window.addEventListener('touchstart', handleMove, { passive: false });
     } else {
       window.addEventListener('mousemove', handleMove);
     }
 
-    // Функция плавного обновления через ticker
     const update = () => {
       if (!leftPhone.current || !rightPhone.current || !notification.current) return;
 
-      // Коэффициент интерполяции (чем меньше, тем плавнее и медленнее)
-      const lerpFactor = 0.1;
+      // Уменьшаем коэффициент для более плавного, инерционного движения
+      const lerpFactor = 0.05; // было 0.1 – теперь медленнее, но плавнее
       currentX.current += (targetX.current - currentX.current) * lerpFactor;
       currentY.current += (targetY.current - currentY.current) * lerpFactor;
 
-      // Применяем трансформации
       gsap.set(leftPhone.current, {
         x: currentX.current * multipliers.left.x,
         y: currentY.current * multipliers.left.y,
@@ -195,7 +182,6 @@ export default function TwoMobile() {
 
     gsap.ticker.add(update);
 
-    // Очистка
     return () => {
       if (isMobile) {
         window.removeEventListener('touchmove', handleMove);
@@ -205,10 +191,10 @@ export default function TwoMobile() {
       }
       gsap.ticker.remove(update);
     };
-  }, []); // Пустой массив зависимостей, так как refs стабильны
+  }, []);
 
   return (
-    <section ref={sectionRef} className="twomobile">
+    <section ref={sectionRef} className="twomobile snap-section h-screen">
       <div className="container">
         <div className="twomobile__list">
 

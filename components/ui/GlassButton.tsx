@@ -1,27 +1,33 @@
 'use client';
 
-import { ReactNode } from 'react';
+import React, { forwardRef } from 'react';
 
-interface GlassButtonProps {
-  children: ReactNode;
-  onClick?: () => void;
+interface GlassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
 }
 
-export default function GlassButton({ children, onClick }: GlassButtonProps) {
-  return (
-    <div className="GlassContainer">
-      <button className="GlassContent" onClick={onClick}>
-        {children}
+const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
+  ({ children, className = '', ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        className={`glass-button ${className}`}
+        {...props}
+      >
+        <span className="glass-content">{children}</span>
+        <div className="glass-material" aria-hidden="true">
+          <div className="glass-edge-reflection" />
+          <div className="glass-emboss-reflection" />
+          <div className="glass-refraction" />
+          <div className="glass-blur" />
+          <div className="blend-layers" />
+          <div className="blend-edge" />
+          <div className="highlight" />
+        </div>
       </button>
-      <div className="GlassMaterial">
-        <div className="GlassEdgeReflection"></div>
-        <div className="GlassEmbossReflection"></div>
-        <div className="GlassRefraction"></div>
-        <div className="GlassBlur"></div>
-        <div className="BlendLayers"></div>
-        <div className="BlendEdge"></div>
-        <div className="Highlight"></div>
-      </div>
-    </div>
-  );
-}
+    );
+  }
+);
+
+GlassButton.displayName = 'GlassButton';
+export default GlassButton;
