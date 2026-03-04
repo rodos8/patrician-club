@@ -40,7 +40,7 @@ export default function Cta() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="cta snap-section h-screen">
+    <section ref={sectionRef} className="cta snap-section h-screen snap-step">
       <div className="container">
         <div ref={titleRef} className="cta__title">
           Любовь - дело случая,<br />

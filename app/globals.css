@@ -729,6 +729,12 @@ section .container {
   letter-spacing: normal;
   color: #868586;
 }
+@media (max-width: 580px) {
+  .twomobile__list-item-text {
+    max-width: 34rem;
+    margin: 0 auto;
+  }
+}
 .twomobile__list-imgs {
   width: 100%;
 }
@@ -1246,4 +1252,35 @@ section .container {
   justify-content: center;
   padding: 4rem 0 4rem 0;
   backdrop-filter: blur(0.3rem);
+}
+
+@media (max-width: 767px) {
+  .snap-step {
+    height: 100vh; /* или min-height: 100vh, если контент короче */
+    scroll-snap-align: start; /* для надёжности */
+  }
+  .cards__list-item.snap-step {
+    padding-top: 20rem;
+  }
+  .twomobile__block.snap-step {
+    padding-top: 13rem;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.block {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .md\:block {
+    display: block;
+  }
+
+  .md\:hidden {
+    display: none;
+  }
 }

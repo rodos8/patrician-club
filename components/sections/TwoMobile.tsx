@@ -199,7 +199,7 @@ export default function TwoMobile() {
         <div className="twomobile__list">
 
           {/* LEFT BLOCK */}
-          <div className="twomobile__block">
+          <div className="twomobile__block snap-step">
             <div className="twomobile__list-imgs">
               <Image ref={leftPhone} src="/img/ipone-1.png" alt="" width={634} height={634} />
             </div>
@@ -214,7 +214,7 @@ export default function TwoMobile() {
           </div>
 
           {/* RIGHT BLOCK */}
-          <div className="twomobile__block">
+          <div className="twomobile__block snap-step">
             <div className="twomobile__list-imgs">
               <Image ref={rightPhone} src="/img/iphone-2.png" alt="" width={596} height={596} />
               <Image ref={notification} src="/img/screen.png" alt="" width={403} height={609} />

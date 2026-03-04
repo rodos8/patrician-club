@@ -14,7 +14,6 @@ export default function Hero() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Анимируем элементы по отдельности, включая саму кнопку
       gsap.set([subtitleRef.current, titleRef.current, buttonRef.current, textRef.current], {
         opacity: 0,
         y: 40,
@@ -34,7 +33,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="hero snap-section h-screen">
+    <section ref={sectionRef} className="hero snap-section h-screen snap-step">
       <div className="container">
         <div ref={subtitleRef} className="hero__subtitle">
           Закрытый клуб знакомств
@@ -44,7 +43,6 @@ export default function Hero() {
           Высокие стандарты.<br />Абсолютная честность
         </h1>
 
-        {/* Теперь ref вешаем прямо на кнопку */}
         <GlassButton ref={buttonRef}>Вступить в клуб</GlassButton>
 
         <p ref={textRef}>
@@ -53,7 +51,25 @@ export default function Hero() {
       </div>
 
       <div className="hero__images">
-        <Image src="/img/hero.png" alt="Hero" fill priority />
+        {/* Десктопное изображение */}
+        <Image 
+          src="/img/hero.png" 
+          alt="Hero" 
+          fill 
+          priority 
+          sizes="100vw"
+          className="object-cover hidden md:block"
+        />
+        
+        {/* Мобильное изображение */}
+        <Image 
+          src="/img/image-wrapper (4).png" 
+          alt="Hero Mobile" 
+          fill 
+          priority 
+          sizes="100vw"
+          className="object-cover block md:hidden"
+        />
       </div>
     </section>
   );

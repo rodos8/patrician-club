@@ -85,7 +85,7 @@ export default function Cards() {
       <div className="container">
         <div ref={cardsRef} className="cards__list">
           {/* CARD 1 */}
-          <div className="cards__list-item">
+          <div className="cards__list-item snap-step">
             <div className="cards__image-wrapper">
               <Image src="/img/image (4).png" alt="" width={330} height={330} />
             </div>
@@ -95,7 +95,7 @@ export default function Cards() {
           </div>
 
           {/* CARD 2 */}
-          <div className="cards__list-item">
+          <div className="cards__list-item snap-step">
             <div className="cards__image-wrapper" style={{ position: 'relative' }}>
               <Image src="/img/image (7).png" alt="" width={330} height={330} />
               <div className="cards__svg-container">
@@ -148,7 +148,7 @@ export default function Cards() {
           </div>
 
           {/* CARD 3 */}
-          <div className="cards__list-item">
+          <div className="cards__list-item snap-step">
             <div className="cards__image-wrapper">
               <Image src="/img/image (6).png" alt="" width={330} height={330} />
             </div>

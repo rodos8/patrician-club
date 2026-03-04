@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,78 +10,100 @@ gsap.registerPlugin(ScrollTrigger);
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   const isAnimating = useRef(false);
-  const [hasSections, setHasSections] = useState(false);
+  const targetsRef = useRef<HTMLElement[]>([]);
+  const isMobileRef = useRef(false);
 
-  // Получение всех секций с классом snap-section
-  const getSections = useCallback((): HTMLElement[] => {
-    return Array.from(document.querySelectorAll('.snap-section'));
+  // Обновление целей без изменения состояния
+  const updateTargets = useCallback(() => {
+    const mobile = window.matchMedia('(max-width: 767px)').matches;
+    isMobileRef.current = mobile;
+    
+    if (mobile) {
+      const steps = Array.from(document.querySelectorAll('.snap-step'));
+      if (steps.length > 0) {
+        targetsRef.current = steps as HTMLElement[];
+        return;
+      }
+    }
+    targetsRef.current = Array.from(document.querySelectorAll('.snap-section'));
   }, []);
 
-  // Переход к секции по индексу
-  const goToSection = useCallback(
-    (index: number) => {
-      const sections = getSections();
-      if (sections.length === 0 || index < 0 || index >= sections.length) return;
-      if (isAnimating.current) return;
+  // Переход к цели по индексу
+  const goToTarget = useCallback((index: number) => {
+    const targets = targetsRef.current;
+    if (targets.length === 0 || index < 0 || index >= targets.length) return;
+    if (isAnimating.current) return;
 
-      isAnimating.current = true;
-      lenisRef.current?.scrollTo(sections[index], {
-        offset: 0,
-        duration: 2.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        immediate: false,
-        lock: true,
-        onComplete: () => {
-          isAnimating.current = false;
-          ScrollTrigger.refresh(); // Обновляем триггеры после перехода
-        },
-      });
-    },
-    [getSections]
-  );
+    isAnimating.current = true;
+    lenisRef.current?.scrollTo(targets[index], {
+      offset: 0,
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      immediate: false,
+      lock: true,
+      onComplete: () => {
+        isAnimating.current = false;
+        ScrollTrigger.refresh();
+      },
+    });
+  }, []);
 
   useEffect(() => {
-    // Проверяем наличие секций
-    const checkSections = () => {
-      const sections = getSections();
-      setHasSections(sections.length > 0);
-      return sections;
-    };
+    // Первичное обновление целей
+    updateTargets();
 
-    // Инициализация Lenis
-    const sections = checkSections();
-    const lenis = new Lenis({
-      duration: 2.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: !hasSections, // Если секций нет – обычная плавная прокрутка
+    // Слушаем изменение размера экрана
+    const mql = window.matchMedia('(max-width: 767px)');
+    const handleChange = () => {
+      updateTargets();
+    };
+    mql.addEventListener('change', handleChange);
+
+    // MutationObserver для отслеживания появления новых секций
+    const observer = new MutationObserver(() => {
+      updateTargets();
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
     });
 
+    // Инициализация Lenis
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      smoothTouch: false, // Отключаем на тач-устройствах
+    });
     lenisRef.current = lenis;
 
-    // Обработчик колесика мыши для постраничного переключения
+    // Обработчик колеса мыши
     const handleWheel = (e: WheelEvent) => {
-      if (!hasSections) return; // Если нет секций – ничего не делаем (работает обычный скролл)
-
-      e.preventDefault(); // Отключаем стандартное поведение
+      const targets = targetsRef.current;
+      if (targets.length === 0) return;
 
       if (isAnimating.current) return;
 
       const direction = e.deltaY > 0 ? 'down' : 'up';
-      const sections = getSections();
-      const currentIndex = sections.findIndex((section) => {
-        const rect = section.getBoundingClientRect();
+
+      const currentIndex = targets.findIndex((el) => {
+        const rect = el.getBoundingClientRect();
         return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
       });
 
       let targetIndex = currentIndex;
-      if (direction === 'down' && currentIndex < sections.length - 1) {
+      if (direction === 'down' && currentIndex < targets.length - 1) {
         targetIndex = currentIndex + 1;
       } else if (direction === 'up' && currentIndex > 0) {
         targetIndex = currentIndex - 1;
       }
 
-      if (targetIndex !== currentIndex) {
-        goToSection(targetIndex);
+      if (targetIndex !== currentIndex && targetIndex >= 0) {
+        e.preventDefault();
+        goToTarget(targetIndex);
       }
     };
 
@@ -111,8 +133,10 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     return () => {
       lenis.destroy();
       window.removeEventListener('wheel', handleWheel);
+      mql.removeEventListener('change', handleChange);
+      observer.disconnect();
     };
-  }, [getSections, goToSection, hasSections]);
+  }, [goToTarget, updateTargets]); // Зависимости стабильны
 
   return <>{children}</>;
 }
