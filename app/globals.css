@@ -540,14 +540,14 @@ section .container {
 }
 .twomobile__list-imgs img:nth-child(1) {
   top: -5rem;
-  left: 26.3rem;
+  left: 24.3rem;
   width: 63.4rem;
   height: 63.4rem;
   z-index: 3;
 }
 .twomobile__block:nth-child(2) .twomobile__list-imgs img:nth-child(2) {
-  top: 2.1rem;
-  left: 62rem;
+  top: 4.1rem;
+  left: 67rem;
   width: 40.3rem;
   height: 60.9rem;
   z-index: 2;
@@ -557,7 +557,7 @@ section .container {
   height: 59.6rem;
   z-index: 1;
   top: 2.989rem;
-  left: 52rem;
+  left: 57rem;
 }
 .twomobile__block:nth-child(1) .twomobile__list-item:last-child {
   text-align: start;

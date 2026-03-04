@@ -36,7 +36,7 @@ export default function Cta() {
   className="cta__title"
 >
   Любовь - дело случая,<br />
-  безопасность - дело принципа
+  Безопасность - дело принципа
 </div>
 
 <div
@@ -45,7 +45,7 @@ export default function Cta() {
   }}
   className="cta__text"
 >
-  Высокие стандарты
+  Высокие стандарты. Абсолютная честность
 </div>
 
 <div

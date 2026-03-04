@@ -14,14 +14,31 @@ export default function Home() {
   const { currentSection } = useScrollAnimation(containerRef);
 
   return (
-    <div ref={containerRef} className="relative">
+    // Контейнер с вертикальным скроллом и снаппингом
+    <div
+      ref={containerRef}
+      className="relative h-screen overflow-y-scroll snap-y snap-mandatory"
+    >
       <FloatingLogo currentSection={currentSection} />
+
+      {/* Все секции, включая Footer, должны быть прямыми потомками контейнера */}
       <main>
-        <Hero />
-        <TwoMobile />
-        <Cards />
-        <Cta />
+        {/* Оборачиваем каждую секцию в div с классами snap-start и h-screen,
+            если сами компоненты не имеют этих классов */}
+        <div className="snap-start h-screen">
+          <Hero />
+        </div>
+        <div className="snap-start h-screen">
+          <TwoMobile />
+        </div>
+        <div className="snap-start h-screen">
+          <Cards />
+        </div>
+        <div className="snap-start h-screen">
+          <Cta />
+        </div>
       </main>
+
       <Footer />
     </div>
   );

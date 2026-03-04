@@ -66,7 +66,7 @@ export default function Hero() {
 
       <div className="hero__images">
         <Image src="/img/hero.png" alt="Hero" fill priority />
-        <Image src="/img/image-wrapper (1).png" alt="Overlay" fill priority />
+        {/* <Image src="/img/image-wrapper (1).png" alt="Overlay" fill priority /> */}
       </div>
     </section>
   );
