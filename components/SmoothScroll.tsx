@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -8,44 +8,75 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+  const [isTelegram, setIsTelegram] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const lenisRef = useRef<Lenis | null>(null);
   const isMobileRef = useRef(false);
   const touchStartYRef = useRef<number | null>(null);
-  const isInTelegramRef = useRef(false);
 
-  // Проверка на Telegram WebView
+  // Проверка на Telegram WebView при монтировании на клиенте
   useEffect(() => {
-    // @ts-ignore
-    isInTelegramRef.current = window.TelegramWebview || navigator.userAgent.includes('Telegram');
+    setIsClient(true);
+    
+    // Улучшенная проверка Telegram WebView
+    const ua = navigator.userAgent.toLowerCase();
+    const isTelegramWebView = 
+      ua.includes('telegram') || 
+      ua.includes('tgweb') || 
+      ua.includes('telegram web') ||
+      // @ts-ignore
+      window.TelegramWebview || 
+      // @ts-ignore
+      window.Telegram ||
+      // @ts-ignore
+      window.external?.toString().includes('Telegram');
+    
+    setIsTelegram(isTelegramWebView);
+    
+    // Добавляем класс для стилизации под Telegram
+    if (isTelegramWebView) {
+      document.documentElement.classList.add('telegram-webview');
+      document.body.classList.add('telegram-webview');
+    }
   }, []);
 
-  // Обновление целей (оставим для совместимости, но не используем для примагничивания)
+  // Обновление мобильного статуса
   const updateTargets = useCallback(() => {
     const mobile = window.matchMedia('(max-width: 980px)').matches;
     isMobileRef.current = mobile;
   }, []);
 
-  // Обработка свайпа для мобильных (без примагничивания)
-  const handleTouchStart = useCallback((e: TouchEvent) => {
-    touchStartYRef.current = e.touches[0].clientY;
-  }, []);
+  // Если это Telegram - возвращаем обычный скролл без Lenis
+  if (isClient && isTelegram) {
+    return (
+      <>
+        {/* Добавляем минимальные стили для Telegram */}
+        <style jsx global>{`
+          .telegram-webview {
+            scroll-behavior: auto !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+          
+          .telegram-webview body {
+            overflow-y: auto !important;
+            height: 100%;
+          }
+          
+          /* Отключаем любые скролл-эффекты */
+          .telegram-webview * {
+            scroll-behavior: auto !important;
+          }
+        `}</style>
+        {children}
+      </>
+    );
+  }
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    // Просто пропускаем события для обычного скролла
-    // Никакого примагничивания
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    touchStartYRef.current = null;
-  }, []);
-
-  // Обработчик колеса мыши (без примагничивания)
-  const handleWheel = useCallback((e: WheelEvent) => {
-    // Просто пропускаем событие, Lenis обработает его сам
-    // Никаких дополнительных действий
-  }, []);
-
+  // Для всех остальных браузеров используем Lenis
   useEffect(() => {
+    if (!isClient || isTelegram) return;
+
     updateTargets();
 
     const mql = window.matchMedia('(max-width: 980px)');
@@ -65,12 +96,11 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       attributeFilter: ['class'],
     });
 
-    // Конфигурация Lenis - без примагничивания
+    // Конфигурация Lenis для не-Telegram браузеров
     const lenis = new Lenis({
       duration: isMobileRef.current ? 0.6 : 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      // smoothTouch: false,
       touchMultiplier: 1,
       wheelMultiplier: 1,
       lerp: 0.1,
@@ -80,14 +110,6 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     });
     
     lenisRef.current = lenis;
-
-    // Добавляем обработчики только для touch (минимально)
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true }); // passive: true для лучшей производительности
-    window.addEventListener('touchend', handleTouchEnd, { passive: true });
-    
-    // НЕ добавляем обработчик wheel с preventDefault, чтобы Lenis работал нормально
-    // window.addEventListener('wheel', handleWheel, { passive: false }); - УДАЛЯЕМ
 
     let rafId: number;
     function raf(time: number) {
@@ -117,13 +139,10 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         cancelAnimationFrame(rafId);
       }
       lenis.destroy();
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
       mql.removeEventListener('change', handleChange);
       observer.disconnect();
     };
-  }, [handleTouchStart, handleTouchMove, handleTouchEnd, updateTargets]);
+  }, [isClient, isTelegram, updateTargets]);
 
   return <>{children}</>;
 }
