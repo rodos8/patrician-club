@@ -14,7 +14,6 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
     const checkMobile = () => {
       const mobile = window.matchMedia('(max-width: 767px)').matches;
       setIsMobile(mobile);
-      console.log('isMobile:', mobile);
     };
     
     checkMobile();
@@ -28,8 +27,6 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
   // Общий эффект для всех устройств
   useEffect(() => {
     if (!logoRef.current) return;
-    
-    console.log('Section changed:', currentSection, 'isMobile:', isMobile);
     
     // Сохраняем предыдущую секцию
     prevSectionRef.current = currentSection;
@@ -46,7 +43,6 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
           scale: 1,
           immediateRender: true 
         });
-        console.log('Mobile: hiding logo (section 0)');
       } else {
         // Все остальные секции - показываем
         gsap.set(logoRef.current, { 
@@ -54,7 +50,6 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
           scale: 1,
           immediateRender: true 
         });
-        console.log('Mobile: showing logo (section', currentSection, ')');
       }
     } else {
       // Для десктопа - анимации с scale
@@ -107,7 +102,6 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
           scale: 1,
           immediateRender: true 
         });
-        console.log('Mobile: force show logo on mount');
       }
     }, 100);
   }, [isMobile, currentSection]);

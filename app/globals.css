@@ -862,6 +862,7 @@ section .container {
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
+  opacity: 0;
 }
 .cards__svg-container div:nth-child(1) svg {
   width: 1.5rem;
@@ -889,6 +890,8 @@ section .container {
   );
   border-image-slice: 1;
   border-image-repeat: stretch; */
+}
+.cards__image-wrapper {
   margin-bottom: 1.6rem;
 }
 @media (max-width: 480px) {

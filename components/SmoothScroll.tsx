@@ -19,7 +19,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   const isScrollingRef = useRef(false);
   const lastScrollTimeRef = useRef(0);
   const lastDirectionRef = useRef(0);
-  const canSwitchRef = useRef(true); // Защита от слишком частых переключений
+  const canSwitchRef = useRef(true);
 
   // Проверка на Telegram WebView
   useEffect(() => {
@@ -51,14 +51,13 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     isAnimating.current = true;
     canSwitchRef.current = false;
     
-    // Блокируем переключение на короткое время
     setTimeout(() => {
       canSwitchRef.current = true;
-    }, 300); // 300ms между переключениями
+    }, 300);
     
     lenisRef.current?.scrollTo(targets[index], {
       offset: 0,
-      duration: immediate ? 0 : (isMobileRef.current ? 0.6 : 0.8), // Увеличил с 0.3 до 0.6 на мобильных
+      duration: immediate ? 0 : (isMobileRef.current ? 0.6 : 0.8),
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       immediate: false,
       lock: true,
@@ -105,13 +104,11 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     const timeDiff = now - lastScrollTimeRef.current;
     lastScrollTimeRef.current = now;
     
-    // Определяем направление
     let direction = 0;
     if (e instanceof WheelEvent) {
       direction = e.deltaY > 0 ? 1 : -1;
     }
     
-    // Если направление изменилось, сбрасываем счетчик
     if (direction !== 0 && direction !== lastDirectionRef.current) {
       lastDirectionRef.current = direction;
     }
@@ -119,13 +116,11 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     const currentIndex = getClosestTargetIndex();
     if (currentIndex === -1) return;
     
-    // Сбрасываем таймер для магнитного эффекта
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
     
-    // На мобильных переходим на следующий слайд при достаточном скролле
-    if (Math.abs(e instanceof WheelEvent ? e.deltaY : 0) > 40) { // Увеличил порог с 20 до 40
+    if (Math.abs(e instanceof WheelEvent ? e.deltaY : 0) > 40) {
       const targetIndex = currentIndex + direction;
       if (targetIndex >= 0 && targetIndex < targetsRef.current.length) {
         e.preventDefault();
@@ -133,7 +128,6 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       }
     }
     
-    // Магнитный эффект после остановки
     scrollTimeoutRef.current = setTimeout(() => {
       if (!isAnimating.current && canSwitchRef.current) {
         const closestIndex = getClosestTargetIndex();
@@ -142,7 +136,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         }
       }
       isScrollingRef.current = false;
-    }, isMobileRef.current ? 200 : 150); // Увеличил с 100 до 200 на мобильных
+    }, isMobileRef.current ? 200 : 150);
   }, [getClosestTargetIndex, goToTarget]);
 
   // Обработка свайпа для мобильных
@@ -160,7 +154,6 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     const touchY = e.touches[0].clientY;
     const deltaY = touchStartYRef.current - touchY;
     
-    // Увеличил порог свайпа с 30 до 50
     if (Math.abs(deltaY) > 50 && !isAnimating.current) {
       const direction = deltaY > 0 ? 1 : -1;
       const currentIndex = getClosestTargetIndex();
@@ -170,7 +163,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         if (targetIndex >= 0 && targetIndex < targetsRef.current.length) {
           e.preventDefault();
           goToTarget(targetIndex);
-          touchStartYRef.current = touchY; // Обновляем начало для следующего свайпа
+          touchStartYRef.current = touchY;
         }
       }
     }
@@ -184,18 +177,22 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     touchStartYRef.current = null;
   }, []);
 
-  // Обработчик колеса мыши для ПК
+  // Обработчик колеса мыши для ПК - ИСПРАВЛЕН
   const handleWheel = useCallback((e: WheelEvent) => {
     if (isMobileRef.current) {
       handleMobileScroll(e);
       return;
     }
     
-    // Для ПК - только сброс таймера, магнитный эффект позже
+    // Для ПК - передаем событие в Lenis
+    e.preventDefault();
+    
+    // Сбрасываем таймер для магнитного эффекта
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
     
+    // Магнитный эффект после остановки
     scrollTimeoutRef.current = setTimeout(() => {
       if (!isAnimating.current) {
         const closestIndex = getClosestTargetIndex();
@@ -226,13 +223,13 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       attributeFilter: ['class'],
     });
 
-    // Конфигурация Lenis в зависимости от платформы
+    // Конфигурация Lenis
     const lenis = new Lenis({
-      duration: isMobileRef.current ? 0.6 : 1.2, // Увеличил с 0.3 до 0.6 на мобильных
+      duration: isMobileRef.current ? 0.6 : 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: !isMobileRef.current,
+      smoothWheel: true, // Включаем плавный скролл для всех
       touchMultiplier: 1,
-      wheelMultiplier: isMobileRef.current ? 0.8 : 1, // Увеличил с 0.5 до 0.8
+      wheelMultiplier: 1,
       lerp: 0.1,
       infinite: false,
       orientation: 'vertical',

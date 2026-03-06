@@ -12,37 +12,30 @@ export default function Cards() {
   const cardsRef = useRef(null);
   const glowRef = useRef(null);
   const svgRefs = useRef<HTMLDivElement[]>([]);
-  const borderRefs = useRef<HTMLDivElement[]>([]); // Ref для псевдоэлементов
+  const borderRefs = useRef<HTMLDivElement[]>([]); 
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const cards = gsap.utils.toArray<HTMLElement>('.cards__list-item');
       
-      // Центральная карточка (индекс 1)
       const centerCard = cards[1];
-      // Боковые карточки (индексы 0 и 2)
       const sideCards = [cards[0], cards[2]];
-      // SVG элементы
       const validSvgs = svgRefs.current.filter(Boolean);
-      // Границы (псевдоэлементы)
       const validBorders = borderRefs.current.filter(Boolean);
 
-      // Начальное состояние: все полностью скрыто, границы тоже скрыты
       gsap.set(sideCards, { opacity: 0, y: 40 });
       gsap.set(centerCard, { opacity: 0, y: 30 });
       gsap.set(validSvgs, { opacity: 0, scale: 1, y: 0 });
-      gsap.set(validBorders, { opacity: 0 }); // Анимируем opacity псевдоэлементов
+      gsap.set(validBorders, { opacity: 0 }); 
 
-      /* ================= СОЗДАЕМ АНИМАЦИЮ ПОЯВЛЕНИЯ ================= */
       const appearTimeline = gsap.timeline({
         paused: true,
       });
 
-      // ЭТАП 0: Задержка перед началом
       appearTimeline
         .to({}, { duration: 0.5 })
 
-        // ЭТАП 1: Боковые карточки появляются одновременно
+        // Боковые карточки появляются
         .to(sideCards, {
           opacity: 1,
           y: 0,
@@ -51,17 +44,15 @@ export default function Cards() {
           stagger: 0,
         })
 
-        // ЭТАП 2: Центральная карточка
-        .to({}, { duration: 0.3 })
+        // Центральная карточка начинает появляться, когда боковые почти на месте
         .to(centerCard, {
           opacity: 1,
           y: 0,
           duration: 1.2,
           ease: 'power3.out',
-        })
+        }, '-=0.8') // Начинаем на 0.8с раньше окончания анимации боковых
 
-        // ЭТАП 3: ГРАНИЦЫ КАРТОЧЕК (появляются после всех карточек)
-        .to({}, { duration: 0.3 }) // Небольшая пауза после появления карточек
+        .to({}, { duration: 0.3 }) 
         .to(validBorders, {
           opacity: 1,
           duration: 1.5,
@@ -69,12 +60,9 @@ export default function Cards() {
           stagger: 0.1,
         })
 
-        // ЭТАП 4: НЕБОЛЬШАЯ ПАУЗА ПЕРЕД SVG
         .to({}, { duration: 0.2 });
 
-      // ЭТАП 5: SVG элементы с сильным нахлестом
       
-      // Первый SVG - стартует сразу
       appearTimeline.to(validSvgs[0], {
         opacity: 1,
         scale: 1,
@@ -83,7 +71,6 @@ export default function Cards() {
         ease: 'power2.inOut',
       }, 0.4);
 
-      // Второй SVG - стартует через 0.4 секунды
       if (validSvgs[1]) {
         appearTimeline.to(validSvgs[1], {
           opacity: 1,
@@ -94,7 +81,6 @@ export default function Cards() {
         }, 1);
       }
 
-      // Третий SVG - стартует через 0.8 секунды
       if (validSvgs[2]) {
         appearTimeline.to(validSvgs[2], {
           opacity: 1,
@@ -105,29 +91,24 @@ export default function Cards() {
         }, 1.6);
       }
 
-      // Добавляем небольшую паузу в конце для завершения
       appearTimeline.to({}, { duration: 0.5 });
 
-      // Создаем ScrollTrigger для управления анимацией
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: 'top 80%',
         end: 'bottom 20%',
         onEnter: () => {
-          // Сбрасываем все элементы в начальное состояние перед анимацией
           gsap.set(sideCards, { opacity: 0, y: 40 });
           gsap.set(centerCard, { opacity: 0, y: 30 });
           gsap.set(validSvgs, { opacity: 0, scale: 1, y: 0 });
           gsap.set(validBorders, { opacity: 0 });
           
-          // Запускаем анимацию с начала
           appearTimeline.play(0);
         },
         onLeave: () => {
           appearTimeline.progress(1);
         },
         onEnterBack: () => {
-          // Снова сбрасываем при возвращении
           gsap.set(sideCards, { opacity: 0, y: 40 });
           gsap.set(centerCard, { opacity: 0, y: 30 });
           gsap.set(validSvgs, { opacity: 0, scale: 1, y: 0 });
@@ -140,17 +121,14 @@ export default function Cards() {
         },
       });
 
-      // Проверяем, если секция уже видима при загрузке
       if (sectionRef.current) {
         const rect = sectionRef.current.getBoundingClientRect();
         const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
         if (isVisible) {
-          // Если видима, показываем все полностью
           setTimeout(() => {
             gsap.to(sideCards, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' });
             gsap.to(centerCard, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: 0.3 });
             
-            // Границы появляются после карточек
             gsap.to(validBorders, { 
               opacity: 1, 
               duration: 2, 
@@ -159,7 +137,6 @@ export default function Cards() {
               delay: 0.8 
             });
             
-            // SVG с нахлестом при загрузке
             gsap.to(validSvgs[0], { opacity: 1, scale: 1, y: 0, duration: 2.5, ease: 'power2.inOut', delay: 0.8 });
             gsap.to(validSvgs[1], { opacity: 1, scale: 1, y: 0, duration: 2.5, ease: 'power2.inOut', delay: 1.2 });
             gsap.to(validSvgs[2], { opacity: 1, scale: 1, y: 0, duration: 2.5, ease: 'power2.inOut', delay: 1.6 });
@@ -167,7 +144,6 @@ export default function Cards() {
         }
       }
 
-      /* ================= GLOW PARALLAX ================= */
       gsap.fromTo(glowRef.current,
         { scale: 0.4, opacity: 0 },
         {
@@ -196,7 +172,6 @@ export default function Cards() {
           <div className="cards__list-item snap-step">
             <div className="cards__image-wrapper" style={{ position: 'relative' }}>
               <Image src="/img/image (4).png" alt="" width={330} height={330} />
-              {/* Псевдоэлемент для границ */}
               <div 
                 ref={(el) => {
                   if (el) borderRefs.current[0] = el;
@@ -227,7 +202,6 @@ export default function Cards() {
           <div className="cards__list-item snap-step">
             <div className="cards__image-wrapper" style={{ position: 'relative' }}>
               <Image src="/img/image (7).png" alt="" width={330} height={330} />
-              {/* Псевдоэлемент для границ */}
               <div 
                 ref={(el) => {
                   if (el) borderRefs.current[1] = el;
@@ -301,7 +275,6 @@ export default function Cards() {
           <div className="cards__list-item snap-step">
             <div className="cards__image-wrapper" style={{ position: 'relative' }}>
               <Image src="/img/image (6).png" alt="" width={330} height={330} />
-              {/* Псевдоэлемент для границ */}
               <div 
                 ref={(el) => {
                   if (el) borderRefs.current[2] = el;

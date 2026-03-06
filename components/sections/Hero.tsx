@@ -51,7 +51,6 @@ export default function Hero() {
       </div>
 
       <div className="hero__images">
-        {/* Десктопное изображение */}
         {/* <Image 
           src="/img/hero.png" 
           alt="Hero" 
@@ -72,11 +71,6 @@ export default function Hero() {
     opacity: 0,
   }}
 />
-        
-
-        
-        
-        {/* Мобильное изображение */}
         <Image 
           src="/img/image-wrapper (4).png" 
           alt="Hero Mobile" 
@@ -86,7 +80,7 @@ export default function Hero() {
           className="object-cover block md:hidden"
         />
          <Image 
-          src="/img/image-wrapper (11).png" 
+          src="/img/image-wrapper.svg" 
           alt="Hero" 
           fill 
           priority 
