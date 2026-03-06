@@ -7,6 +7,7 @@ import Logo from './Logo';
 export default function FloatingLogo({ currentSection }: { currentSection: number }) {
   const logoRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const prevSectionRef = useRef(currentSection);
 
   // Определяем мобильное устройство
   useEffect(() => {
@@ -24,67 +25,92 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Отдельный эффект для мобильных
+  // Общий эффект для всех устройств
   useEffect(() => {
-    if (!logoRef.current || !isMobile) return;
+    if (!logoRef.current) return;
     
+    console.log('Section changed:', currentSection, 'isMobile:', isMobile);
     
-    // На мобильных используем прямой CSS или простые gsap.set
-    if (currentSection === 0) {
-      // Hero - скрываем
-      gsap.set(logoRef.current, { opacity: 0 });
-    } else {
-      // Все остальные секции - показываем
-      gsap.set(logoRef.current, { opacity: 1 });
-    }
-    
-  }, [currentSection, isMobile]);
-
-  // Отдельный эффект для десктопа
-  useEffect(() => {
-    if (!logoRef.current || isMobile) return;
-    
-    console.log('Desktop section changed:', currentSection);
+    // Сохраняем предыдущую секцию
+    prevSectionRef.current = currentSection;
     
     // Останавливаем все текущие анимации
     gsap.killTweensOf(logoRef.current);
     
-    // Для десктопа - анимации с scale
-    switch (currentSection) {
-      case 0: // Hero – скрыт
-        gsap.to(logoRef.current, { 
+    if (isMobile) {
+      // Для мобильных - принудительно устанавливаем opacity
+      if (currentSection === 0) {
+        // Hero - скрываем
+        gsap.set(logoRef.current, { 
           opacity: 0, 
-          scale: 1, 
-          duration: 0.3,
-          ease: 'power2.out',
+          scale: 1,
+          immediateRender: true 
         });
-        break;
-      case 1: // TwoMobile – появляется
-        gsap.to(logoRef.current, { 
+        console.log('Mobile: hiding logo (section 0)');
+      } else {
+        // Все остальные секции - показываем
+        gsap.set(logoRef.current, { 
           opacity: 1, 
-          scale: 1, 
-          duration: 0.5,
-          ease: 'power2.out',
+          scale: 1,
+          immediateRender: true 
         });
-        break;
-      case 2: // Cards – без изменений
-        gsap.to(logoRef.current, { 
-          opacity: 1, 
-          scale: 1, 
-          duration: 0.3,
-          ease: 'power2.out',
-        });
-        break;
-      case 3: // Cta – увеличивается
-        gsap.to(logoRef.current, { 
-          opacity: 1, 
-          scale: 1.2, 
-          duration: 0.5,
-          ease: 'power2.out',
-        });
-        break;
+        console.log('Mobile: showing logo (section', currentSection, ')');
+      }
+    } else {
+      // Для десктопа - анимации с scale
+      switch (currentSection) {
+        case 0: // Hero – скрыт
+          gsap.to(logoRef.current, { 
+            opacity: 0, 
+            scale: 1, 
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+          break;
+        case 1: // TwoMobile – появляется
+          gsap.to(logoRef.current, { 
+            opacity: 1, 
+            scale: 1, 
+            duration: 0.5,
+            ease: 'power2.out',
+          });
+          break;
+        case 2: // Cards – без изменений
+          gsap.to(logoRef.current, { 
+            opacity: 1, 
+            scale: 1, 
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+          break;
+        case 3: // Cta – увеличивается
+          gsap.to(logoRef.current, { 
+            opacity: 1, 
+            scale: 1.2, 
+            duration: 0.5,
+            ease: 'power2.out',
+          });
+          break;
+      }
     }
   }, [currentSection, isMobile]);
+
+  // Принудительно проверяем при монтировании
+  useEffect(() => {
+    if (!logoRef.current || !isMobile) return;
+    
+    // Через небольшую задержку проверяем текущую секцию
+    setTimeout(() => {
+      if (currentSection !== 0) {
+        gsap.set(logoRef.current, { 
+          opacity: 1, 
+          scale: 1,
+          immediateRender: true 
+        });
+        console.log('Mobile: force show logo on mount');
+      }
+    }, 100);
+  }, [isMobile, currentSection]);
 
   return (
     <div 
