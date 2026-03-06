@@ -52,14 +52,29 @@ export default function Hero() {
 
       <div className="hero__images">
         {/* Десктопное изображение */}
-        <Image 
+        {/* <Image 
           src="/img/hero.png" 
           alt="Hero" 
           fill 
           priority 
           sizes="100vw"
           className="object-cover hidden md:block"
-        />
+        /> */}
+        <Image 
+  src="/img/image-wrapper (8).png" 
+  alt="Hero" 
+  fill 
+  priority 
+  sizes="100vw"
+  className="object-cover hidden md:block"
+  style={{
+    animation: 'fadeIn 0.2s ease-in-out 0.1s forwards',
+    opacity: 0,
+  }}
+/>
+        
+
+        
         
         {/* Мобильное изображение */}
         <Image 
@@ -69,6 +84,14 @@ export default function Hero() {
           priority 
           sizes="100vw"
           className="object-cover block md:hidden"
+        />
+         <Image 
+          src="/img/image-wrapper (11).png" 
+          alt="Hero" 
+          fill 
+          priority 
+          sizes="100vw"
+          className="object-cover hidden md:block"
         />
       </div>
     </section>

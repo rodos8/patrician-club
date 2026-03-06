@@ -1414,3 +1414,9 @@ section .container {
     display: none;
   }
 }
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
