@@ -1332,14 +1332,14 @@ section .container {
 
   /* размеры */
   .twomobile__list-imgs img:nth-child(1) {
-    width: 130%;
-    max-width: 130%;
+    width: 100%;
+    max-width: 100%;
     height: auto;
   }
 
   .twomobile__block:nth-child(2) .twomobile__list-imgs img:nth-child(2) {
     position: absolute !important;
-    width: 90%;
+    width: 65%;
     height: auto;
     margin-top: -6rem;
     bottom: -3rem;
@@ -1348,8 +1348,8 @@ section .container {
   .twomobile__list-imgs img:nth-child(3) {
     position: absolute !important;
     bottom: 0;
-    width: 130%;
-    max-width: 130%;
+    width: 100%;
+    max-width: 100%;
     height: auto;
   }
 
@@ -1397,6 +1397,29 @@ section .container {
   }
 }
 @media (max-width: 480px) {
+  /* размеры */
+  .twomobile__list-imgs img:nth-child(1) {
+    width: 130%;
+    max-width: 130%;
+    height: auto;
+  }
+
+  .twomobile__block:nth-child(2) .twomobile__list-imgs img:nth-child(2) {
+    position: absolute !important;
+    width: 90%;
+    height: auto;
+    margin-top: -6rem;
+    bottom: -3rem;
+  }
+
+  .twomobile__list-imgs img:nth-child(3) {
+    position: absolute !important;
+    bottom: 0;
+    width: 130%;
+    max-width: 130%;
+    height: auto;
+  }
+
   .twomobile__block.snap-step {
     flex-direction: column;
   }
