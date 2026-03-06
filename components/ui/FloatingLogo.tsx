@@ -13,27 +13,22 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
     // Проверяем мобильное устройство
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     
-    // На мобильном лого всегда видимо и без изменений
     if (isMobile) {
-      const tl = gsap.timeline();
-
+      // На мобильном - только opacity, без scale
       switch (currentSection) {
-      case 0: // Hero – скрыт
-        tl.to(logoRef.current, { opacity: 0, scale: 1, duration: 0.3 });
-        break;
-      case 1: // TwoMobile – появляется
-        tl.to(logoRef.current, { opacity: 1, scale: 1, duration: 0.5 });
-        break;
-      case 2: // Cards – без изменений
-        tl.to(logoRef.current, { opacity: 1, scale: 1, duration: 0.3 });
-        break;
-      case 3: // Cta – увеличивается (только на десктопе)
-        tl.to(logoRef.current, { opacity: 1, scale: 1, duration: 0.5 });
-        break;
+        case 0: // Hero – скрыт
+          gsap.to(logoRef.current, { opacity: 0, duration: 0.3 });
+          break;
+        case 1: // TwoMobile – появляется
+        case 2: // Cards – видим
+        case 3: // Cta – видим
+          gsap.to(logoRef.current, { opacity: 1, duration: 0.3 });
+          break;
       }
       return;
     }
 
+    // Для десктопа - анимации с scale
     const tl = gsap.timeline();
 
     switch (currentSection) {
@@ -46,7 +41,7 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
       case 2: // Cards – без изменений
         tl.to(logoRef.current, { opacity: 1, scale: 1, duration: 0.3 });
         break;
-      case 3: // Cta – увеличивается (только на десктопе)
+      case 3: // Cta – увеличивается
         tl.to(logoRef.current, { opacity: 1, scale: 1.2, duration: 0.5 });
         break;
     }
