@@ -1448,3 +1448,10 @@ section .container {
     opacity: 1;
   }
 }
+
+@media (max-width: 699px) {
+  [data-telegram="true"] .snap-step {
+    min-height: 700px !important;
+    height: auto;
+  }
+}
