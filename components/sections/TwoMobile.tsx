@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -18,6 +18,15 @@ export default function TwoMobile() {
   const rightText = useRef<HTMLDivElement>(null);
 
   const glow = useRef<HTMLDivElement>(null);
+  
+  const [isMobile, setIsMobile] = useState(false);
+  const [isFirefox, setIsFirefox] = useState(false);
+
+  // Определяем браузер и устройство
+  useEffect(() => {
+    setIsMobile(window.matchMedia('(max-width: 767px)').matches);
+    setIsFirefox(navigator.userAgent.toLowerCase().includes('firefox'));
+  }, []);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -25,22 +34,21 @@ export default function TwoMobile() {
 
       /* ================= DESKTOP ================= */
       mm.add('(min-width: 768px)', () => {
-        // Начальное состояние
+        // Начальное состояние - убираем ease из set
         gsap.set(leftPhone.current, { opacity: 0 });
         gsap.set(rightPhone.current, { opacity: 0 });
         gsap.set(notification.current, { opacity: 0 });
         gsap.set([leftText.current, rightText.current], { opacity: 0 });
 
-        // Анимация появления при скролле - ОЧЕНЬ МЕДЛЕННАЯ
+        // Анимация появления при скролле - убираем ease для Firefox
         gsap.to(leftPhone.current, {
           opacity: 1,
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top bottom',
             end: 'center center',
-            scrub: 4, // увеличено с 2 до 4
+            scrub: 4,
           },
-          ease: 'power1.inOut', // более плавное easing
         });
 
         gsap.to(rightPhone.current, {
@@ -49,21 +57,18 @@ export default function TwoMobile() {
             trigger: sectionRef.current,
             start: 'top bottom',
             end: 'center center',
-            scrub: 4, // увеличено с 2 до 4
+            scrub: 4,
           },
-          ease: 'power1.inOut',
         });
 
-        // Экран появляется еще медленнее
         gsap.to(notification.current, {
           opacity: 1,
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top bottom',
             end: 'center center',
-            scrub: 6, // еще медленнее для экрана
+            scrub: 6,
           },
-          ease: 'power1.inOut',
         });
 
         gsap.to([leftText.current, rightText.current], {
@@ -74,7 +79,6 @@ export default function TwoMobile() {
             end: 'center center',
             scrub: 4,
           },
-          ease: 'power1.inOut',
         });
       });
 
@@ -88,9 +92,8 @@ export default function TwoMobile() {
             trigger: sectionRef.current,
             start: 'top bottom',
             end: 'center center',
-            scrub: 3, // увеличено с 1.5 до 3
+            scrub: 3,
           },
-          ease: 'power1.inOut',
         });
       });
 
@@ -105,9 +108,8 @@ export default function TwoMobile() {
             trigger: sectionRef.current,
             start: 'top center',
             end: 'bottom center',
-            scrub: 3, // увеличено с 1 до 3
+            scrub: 3,
           },
-          ease: 'power1.inOut',
         }
       );
     }, sectionRef);
@@ -115,103 +117,63 @@ export default function TwoMobile() {
     return () => ctx.revert();
   }, []);
 
-  // ========== ОЧЕНЬ МЕДЛЕННЫЙ PARALLAX EFFECT ==========
-  useLayoutEffect(() => {
-    const targetX = { current: 0 };
-    const targetY = { current: 0 };
-    const currentX = { current: 0 };
-    const currentY = { current: 0 };
+  // ========== ПАРАЛЛАКС ЭФФЕКТ ДЛЯ ВСЕХ БРАУЗЕРОВ ==========
+  useEffect(() => {
+    // Не запускаем на мобильных
+    if (isMobile) return;
 
-    // Уменьшаем multipliers для более subtle эффекта
+    let animationFrame: number;
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
     const multipliers = {
-      left: { x: 15, y: 15 },      // левый телефон
-      right: { x: -8, y: -12 },     // правый телефон
-      notif: { x: -5, y: -8 },      // экран двигается МЕНЬШЕ ВСЕХ
+      left: { x: 15, y: 15 },
+      right: { x: -8, y: -12 },
+      notif: { x: -5, y: -8 },
     };
 
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
-    if (isMobile) {
-      multipliers.left.x *= 0.4;
-      multipliers.left.y *= 0.4;
-      multipliers.right.x *= 0.4;
-      multipliers.right.y *= 0.4;
-      multipliers.notif.x *= 0.3; // на мобильных экран двигается еще меньше
-      multipliers.notif.y *= 0.3;
-    }
-
-    const handleMove = (e: MouseEvent | TouchEvent) => {
-      let clientX, clientY;
-      if (e instanceof TouchEvent) {
-        if (e.touches.length === 0) return;
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-        e.preventDefault();
-      } else {
-        clientX = e.clientX;
-        clientY = e.clientY;
-      }
-      
-      // Уменьшаем чувствительность
-      targetX.current = (clientX / window.innerWidth - 0.5) * 0.6;
-      targetY.current = (clientY / window.innerHeight - 0.5) * 0.6;
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 0.6;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 0.6;
     };
 
-    if (isMobile) {
-      window.addEventListener('touchmove', handleMove, { passive: false });
-      window.addEventListener('touchstart', handleMove, { passive: false });
-    } else {
-      window.addEventListener('mousemove', handleMove);
-    }
-
-    const update = () => {
+    const animate = () => {
       if (!leftPhone.current || !rightPhone.current || !notification.current) return;
 
-      // ОЧЕНЬ МЕДЛЕННОЕ движение с маленьким lerp
-      const lerpFactor = 0.08; // уменьшено с 0.05 для очень медленного движения
-      
-      currentX.current += (targetX.current - currentX.current) * lerpFactor;
-      currentY.current += (targetY.current - currentY.current) * lerpFactor;
+      // Плавная интерполяция
+      currentX += (mouseX - currentX) * 0.08;
+      currentY += (mouseY - currentY) * 0.08;
 
-      // Плавное применение трансформаций
-      gsap.set(leftPhone.current, {
-        x: currentX.current * multipliers.left.x,
-        y: currentY.current * multipliers.left.y,
-        rotation: currentX.current * 0.5, // минимальный поворот
-        ease: 'power1.inOut', // добавляем easing для плавности
-      });
+      // Для Firefox используем transform3d для аппаратного ускорения
+      const transformStyle = isFirefox ? 'transform3d' : 'transform';
       
-      gsap.set(rightPhone.current, {
-        x: currentX.current * multipliers.right.x,
-        y: currentY.current * multipliers.right.y,
-        rotation: currentX.current * 0.5,
-        ease: 'power1.inOut',
-      });
+      // Применяем трансформации напрямую
+      leftPhone.current.style.transform = `translate3d(${currentX * multipliers.left.x}px, ${currentY * multipliers.left.y}px, 0) rotate(${currentX * 0.5}deg)`;
+      rightPhone.current.style.transform = `translate3d(${currentX * multipliers.right.x}px, ${currentY * multipliers.right.y}px, 0) rotate(${currentX * 0.5}deg)`;
       
-      // Экран двигается с дополнительным замедлением
-      const notifLerpFactor = 0.04; // еще медленнее для экрана
-      const notifX = currentX.current + (targetX.current - currentX.current) * notifLerpFactor;
-      const notifY = currentY.current + (targetY.current - currentY.current) * notifLerpFactor;
-      
-      gsap.set(notification.current, {
-        x: notifX * multipliers.notif.x,
-        y: notifY * multipliers.notif.y,
-        rotation: currentX.current * 0.2, // почти без поворота
-        ease: 'power1.inOut',
-      });
+      // Экран двигается медленнее
+      const notifX = currentX + (mouseX - currentX) * 0.04;
+      const notifY = currentY + (mouseY - currentY) * 0.04;
+      notification.current.style.transform = `translate3d(${notifX * multipliers.notif.x}px, ${notifY * multipliers.notif.y}px, 0) rotate(${currentX * 0.2}deg)`;
+
+      animationFrame = requestAnimationFrame(animate);
     };
 
-    gsap.ticker.add(update);
+    window.addEventListener('mousemove', handleMouseMove);
+    animate();
 
     return () => {
-      if (isMobile) {
-        window.removeEventListener('touchmove', handleMove);
-        window.removeEventListener('touchstart', handleMove);
-      } else {
-        window.removeEventListener('mousemove', handleMove);
-      }
-      gsap.ticker.remove(update);
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrame);
+      
+      // Сбрасываем трансформации
+      if (leftPhone.current) leftPhone.current.style.transform = '';
+      if (rightPhone.current) rightPhone.current.style.transform = '';
+      if (notification.current) notification.current.style.transform = '';
     };
-  }, []);
+  }, [isMobile, isFirefox]);
 
   return (
     <section ref={sectionRef} className="twomobile snap-section h-screen">
@@ -227,7 +189,11 @@ export default function TwoMobile() {
                 alt="" 
                 width={634} 
                 height={634}
-                style={{ willChange: 'transform' }}
+                style={{ 
+                  willChange: 'transform',
+                  transform: 'translateZ(0)', // Аппаратное ускорение
+                  backfaceVisibility: 'hidden', // Оптимизация для Firefox
+                }}
               />
             </div>
             <div ref={leftText} className="twomobile__list-item">
@@ -249,7 +215,11 @@ export default function TwoMobile() {
                 alt="" 
                 width={596} 
                 height={596}
-                style={{ willChange: 'transform' }}
+                style={{ 
+                  willChange: 'transform',
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden',
+                }}
               />
               <Image 
                 ref={notification} 
@@ -257,7 +227,11 @@ export default function TwoMobile() {
                 alt="" 
                 width={403} 
                 height={609}
-                style={{ willChange: 'transform' }}
+                style={{ 
+                  willChange: 'transform',
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden',
+                }}
               />
             </div>
             <div ref={rightText} className="twomobile__list-item">
