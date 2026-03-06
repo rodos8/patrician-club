@@ -68,7 +68,7 @@ export default function Hero() {
   sizes="100vw"
   className="object-cover hidden md:block"
   style={{
-    animation: 'fadeIn 0.2s ease-in-out 0.1s forwards',
+    animation: 'fadeIn 0.3s ease-in-out 0.2s forwards',
     opacity: 0,
   }}
 />
