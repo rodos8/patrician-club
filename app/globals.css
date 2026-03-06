@@ -336,7 +336,7 @@ section .container {
 }
 .hero img:last-child {
   top: auto;
-  height: 101vh !important;
+  height: 101.5vh !important;
 }
 .hero .container {
   margin: auto auto 8rem;
