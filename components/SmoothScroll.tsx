@@ -15,6 +15,13 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   const touchStartYRef = useRef<number | null>(null);
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isInTelegramRef = useRef(false);
+
+  // Проверка на Telegram WebView
+  useEffect(() => {
+    // @ts-ignore
+    isInTelegramRef.current = window.TelegramWebview || navigator.userAgent.includes('Telegram');
+  }, []);
 
   // Обновление целей без изменения состояния
   const updateTargets = useCallback(() => {
@@ -41,7 +48,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     
     lenisRef.current?.scrollTo(targets[index], {
       offset: 0,
-      duration: immediate ? 0 : 0.8, // Быстрая, но плавная анимация
+      duration: immediate ? 0 : 0.8,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       immediate: false,
       lock: true,
@@ -96,24 +103,26 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       clearTimeout(scrollTimeoutRef.current);
     }
     
-    // Устанавливаем новый таймер для срабатывания после остановки скролла
-    scrollTimeoutRef.current = setTimeout(handleScrollEnd, 150); // 150ms после остановки
+    scrollTimeoutRef.current = setTimeout(handleScrollEnd, 150);
   }, [handleScrollEnd]);
 
-  // Обработка свайпа
+  // Обработка свайпа для мобильных
   const handleTouchStart = useCallback((e: TouchEvent) => {
     touchStartYRef.current = e.touches[0].clientY;
     
-    // Отменяем запланированный магнитный эффект во время активного касания
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
   }, []);
 
-  const handleTouchMove = useCallback(() => {
-    // Сбрасываем таймер при движении
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
+    }
+    
+    // В Telegram WebView нужно предотвращать стандартное поведение для плавности
+    if (isInTelegramRef.current) {
+      e.preventDefault();
     }
   }, []);
 
@@ -124,7 +133,6 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     const touchEndY = e.changedTouches[0].clientY;
     const deltaY = touchStartYRef.current - touchEndY;
     
-    // Минимальное расстояние для свайпа (в пикселях)
     const minSwipeDistance = 30;
     
     if (Math.abs(deltaY) < minSwipeDistance) {
@@ -152,7 +160,6 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       e.preventDefault();
       snapToTarget(targetIndex);
     } else {
-      // Если свайп недостаточно сильный для переключения, просто примагничиваемся к текущему
       setTimeout(() => {
         snapToTarget(currentIndex);
       }, 50);
@@ -161,26 +168,22 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     touchStartYRef.current = null;
   }, [snapToTarget, getClosestTargetIndex]);
 
-  // Обработчик колеса мыши (для десктопа)
+  // Обработчик колеса мыши
   const handleWheel = useCallback((e: WheelEvent) => {
-    // Не блокируем обычный скролл, просто сбрасываем таймер
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
   }, []);
 
   useEffect(() => {
-    // Первичное обновление целей
     updateTargets();
 
-    // Слушаем изменение размера экрана
     const mql = window.matchMedia('(max-width: 980px)');
     const handleChange = () => {
       updateTargets();
     };
     mql.addEventListener('change', handleChange);
 
-    // MutationObserver для отслеживания появления новых секций
     const observer = new MutationObserver(() => {
       updateTargets();
     });
@@ -192,53 +195,61 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       attributeFilter: ['class'],
     });
 
-    // Инициализация Lenis
+    // Оптимизированная конфигурация Lenis для мобильных
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: isMobileRef.current ? 0.8 : 1.2, // Меньше длительность на мобильных
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      // smoothTouch: false, 
-      touchMultiplier: 2,
+      // smoothTouch: isInTelegramRef.current ? false : true, // Отключаем smoothTouch в Telegram
+      touchMultiplier: isInTelegramRef.current ? 1.5 : 2, // Меньше множитель в Telegram
+      wheelMultiplier: 1,
+      lerp: 0.1, // Добавляем lerp для более плавного движения
+      infinite: false,
     });
+    
     lenisRef.current = lenis;
 
-    // Добавляем обработчики
+    // Добавляем обработчики с правильными опциями
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false }); // Важно: passive: false для предотвращения скролла
     window.addEventListener('touchend', handleTouchEnd, { passive: false });
     window.addEventListener('wheel', handleWheel, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // RAF для Lenis
+    // Оптимизированный RAF
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
-    // Интеграция с ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
+    
     ScrollTrigger.scrollerProxy(document.body, {
       scrollTop(value?: number) {
         if (arguments.length && value !== undefined) {
           lenis.scrollTo(value);
         }
-        return window.scrollY; // Используем нативный scroll
+        return window.scrollY;
       },
       getBoundingClientRect() {
         return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
       },
     });
 
-    // Первоначальный магнитный эффект после загрузки
+    // Задержка перед первым магнитным эффектом
     setTimeout(() => {
       const initialIndex = getClosestTargetIndex();
       if (initialIndex !== -1) {
         snapToTarget(initialIndex, true);
       }
-    }, 100);
+    }, 200);
 
     return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
       lenis.destroy();
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
