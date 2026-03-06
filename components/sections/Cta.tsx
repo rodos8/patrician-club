@@ -11,7 +11,7 @@ export default function Cta() {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = useRef<HTMLAnchorElement>(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -48,11 +48,11 @@ export default function Cta() {
         </div>
 
         <div ref={textRef} className="cta__text">
-          Высокие стандарты. Абсолютная честность
+          Высокие стандарты. Абсолютная честность.
         </div>
 
         {/* Прямая ссылка на кнопку – работает благодаря forwardRef */}
-        <GlassButton ref={buttonRef}>Вступить</GlassButton>
+        <GlassButton ref={buttonRef} href="https://apps.apple.com/ru/app/patrician/id6503259972" target="_blank">Вступить</GlassButton>
       </div>
     </section>
   );

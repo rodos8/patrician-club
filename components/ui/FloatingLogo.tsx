@@ -10,11 +10,16 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
   useEffect(() => {
     if (!logoRef.current) return;
 
-    const tl = gsap.timeline();
+    // Проверяем мобильное устройство
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    
+    // На мобильном лого всегда видимо и без изменений
+    if (isMobile) {
+      const tl = gsap.timeline();
 
-    switch (currentSection) {
+      switch (currentSection) {
       case 0: // Hero – скрыт
-        tl.to(logoRef.current, { opacity: 0, scale: 0.8, duration: 0.3 });
+        tl.to(logoRef.current, { opacity: 0, scale: 1, duration: 0.3 });
         break;
       case 1: // TwoMobile – появляется
         tl.to(logoRef.current, { opacity: 1, scale: 1, duration: 0.5 });
@@ -22,7 +27,26 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
       case 2: // Cards – без изменений
         tl.to(logoRef.current, { opacity: 1, scale: 1, duration: 0.3 });
         break;
-      case 3: // Cta – увеличивается
+      case 3: // Cta – увеличивается (только на десктопе)
+        tl.to(logoRef.current, { opacity: 1, scale: 1, duration: 0.5 });
+        break;
+      }
+      return;
+    }
+
+    const tl = gsap.timeline();
+
+    switch (currentSection) {
+      case 0: // Hero – скрыт
+        tl.to(logoRef.current, { opacity: 0, scale: 1, duration: 0.3 });
+        break;
+      case 1: // TwoMobile – появляется
+        tl.to(logoRef.current, { opacity: 1, scale: 1, duration: 0.5 });
+        break;
+      case 2: // Cards – без изменений
+        tl.to(logoRef.current, { opacity: 1, scale: 1, duration: 0.3 });
+        break;
+      case 3: // Cta – увеличивается (только на десктопе)
         tl.to(logoRef.current, { opacity: 1, scale: 1.2, duration: 0.5 });
         break;
     }
@@ -30,7 +54,7 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
 
   return (
     <div 
-    className='logo__header'
+      className='logo__header'
       ref={logoRef}
       style={{
         position: 'fixed',

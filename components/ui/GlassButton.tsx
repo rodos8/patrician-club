@@ -2,15 +2,18 @@
 
 import React, { forwardRef } from 'react';
 
-interface GlassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface GlassButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   children: React.ReactNode;
 }
 
-const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
-  ({ children, className = '', ...props }, ref) => {
+const GlassButton = forwardRef<HTMLAnchorElement, GlassButtonProps>(
+  ({ children, className = '', href = 'https://apps.apple.com/ru/app/patrician/id6503259972', target = '_blank', ...props }, ref) => {
     return (
-      <button
+      <a
         ref={ref}
+        href={href}
+        target={target}
+        rel={target === '_blank' ? 'noopener noreferrer' : undefined}
         className={`glass-button ${className}`}
         {...props}
       >
@@ -24,7 +27,7 @@ const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
           <div className="blend-edge" />
           <div className="highlight" />
         </div>
-      </button>
+      </a>
     );
   }
 );

@@ -9,7 +9,7 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const subtitleRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = useRef<HTMLAnchorElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
 
   useLayoutEffect(() => {
@@ -43,7 +43,7 @@ export default function Hero() {
           Высокие стандарты<br />Абсолютная честность
         </h1>
 
-        <GlassButton ref={buttonRef}>Вступить в клуб</GlassButton>
+        <GlassButton ref={buttonRef} href="https://apps.apple.com/ru/app/patrician/id6503259972" target="_blank">Вступить в клуб</GlassButton>
 
         <p ref={textRef}>
           <span>Эксклюзивно на IOS</span> Москва & Санкт-Петербург

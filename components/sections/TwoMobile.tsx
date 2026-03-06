@@ -25,22 +25,22 @@ export default function TwoMobile() {
 
       /* ================= DESKTOP ================= */
       mm.add('(min-width: 768px)', () => {
-        // Начальное состояние: телефоны прозрачны, но без смещения (чтобы не конфликтовать с параллаксом)
+        // Начальное состояние
         gsap.set(leftPhone.current, { opacity: 0 });
         gsap.set(rightPhone.current, { opacity: 0 });
         gsap.set(notification.current, { opacity: 0 });
         gsap.set([leftText.current, rightText.current], { opacity: 0 });
 
-        // Анимация при скролле — только opacity, x управляется параллаксом
+        // Анимация появления при скролле - ОЧЕНЬ МЕДЛЕННАЯ
         gsap.to(leftPhone.current, {
           opacity: 1,
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top bottom',
             end: 'center center',
-            scrub: 2,
+            scrub: 4, // увеличено с 2 до 4
           },
-          ease: 'none',
+          ease: 'power1.inOut', // более плавное easing
         });
 
         gsap.to(rightPhone.current, {
@@ -49,20 +49,21 @@ export default function TwoMobile() {
             trigger: sectionRef.current,
             start: 'top bottom',
             end: 'center center',
-            scrub: 2,
+            scrub: 4, // увеличено с 2 до 4
           },
-          ease: 'none',
+          ease: 'power1.inOut',
         });
 
+        // Экран появляется еще медленнее
         gsap.to(notification.current, {
           opacity: 1,
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top bottom',
             end: 'center center',
-            scrub: 2,
+            scrub: 6, // еще медленнее для экрана
           },
-          ease: 'none',
+          ease: 'power1.inOut',
         });
 
         gsap.to([leftText.current, rightText.current], {
@@ -71,9 +72,9 @@ export default function TwoMobile() {
             trigger: sectionRef.current,
             start: 'top bottom',
             end: 'center center',
-            scrub: 2,
+            scrub: 4,
           },
-          ease: 'none',
+          ease: 'power1.inOut',
         });
       });
 
@@ -87,9 +88,9 @@ export default function TwoMobile() {
             trigger: sectionRef.current,
             start: 'top bottom',
             end: 'center center',
-            scrub: 1.5,
+            scrub: 3, // увеличено с 1.5 до 3
           },
-          ease: 'none',
+          ease: 'power1.inOut',
         });
       });
 
@@ -104,8 +105,9 @@ export default function TwoMobile() {
             trigger: sectionRef.current,
             start: 'top center',
             end: 'bottom center',
-            scrub: 1,
+            scrub: 3, // увеличено с 1 до 3
           },
+          ease: 'power1.inOut',
         }
       );
     }, sectionRef);
@@ -113,27 +115,28 @@ export default function TwoMobile() {
     return () => ctx.revert();
   }, []);
 
-  // ========== PARALLAX EFFECT (плавный, с пониженным lerp для инерции) ==========
+  // ========== ОЧЕНЬ МЕДЛЕННЫЙ PARALLAX EFFECT ==========
   useLayoutEffect(() => {
     const targetX = { current: 0 };
     const targetY = { current: 0 };
     const currentX = { current: 0 };
     const currentY = { current: 0 };
 
+    // Уменьшаем multipliers для более subtle эффекта
     const multipliers = {
-      left: { x: 20, y: 20 },
-      right: { x: -10, y: -20 },
-      notif: { x: -20, y: -35 },
+      left: { x: 15, y: 15 },      // левый телефон
+      right: { x: -8, y: -12 },     // правый телефон
+      notif: { x: -5, y: -8 },      // экран двигается МЕНЬШЕ ВСЕХ
     };
 
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     if (isMobile) {
-      multipliers.left.x *= 0.5;
-      multipliers.left.y *= 0.5;
-      multipliers.right.x *= 0.5;
-      multipliers.right.y *= 0.5;
-      multipliers.notif.x *= 0.5;
-      multipliers.notif.y *= 0.5;
+      multipliers.left.x *= 0.4;
+      multipliers.left.y *= 0.4;
+      multipliers.right.x *= 0.4;
+      multipliers.right.y *= 0.4;
+      multipliers.notif.x *= 0.3; // на мобильных экран двигается еще меньше
+      multipliers.notif.y *= 0.3;
     }
 
     const handleMove = (e: MouseEvent | TouchEvent) => {
@@ -147,8 +150,10 @@ export default function TwoMobile() {
         clientX = e.clientX;
         clientY = e.clientY;
       }
-      targetX.current = (clientX / window.innerWidth - 0.5);
-      targetY.current = (clientY / window.innerHeight - 0.5);
+      
+      // Уменьшаем чувствительность
+      targetX.current = (clientX / window.innerWidth - 0.5) * 0.6;
+      targetY.current = (clientY / window.innerHeight - 0.5) * 0.6;
     };
 
     if (isMobile) {
@@ -161,22 +166,37 @@ export default function TwoMobile() {
     const update = () => {
       if (!leftPhone.current || !rightPhone.current || !notification.current) return;
 
-      // Уменьшаем коэффициент для более плавного, инерционного движения
-      const lerpFactor = 0.05; // было 0.1 – теперь медленнее, но плавнее
+      // ОЧЕНЬ МЕДЛЕННОЕ движение с маленьким lerp
+      const lerpFactor = 0.08; // уменьшено с 0.05 для очень медленного движения
+      
       currentX.current += (targetX.current - currentX.current) * lerpFactor;
       currentY.current += (targetY.current - currentY.current) * lerpFactor;
 
+      // Плавное применение трансформаций
       gsap.set(leftPhone.current, {
         x: currentX.current * multipliers.left.x,
         y: currentY.current * multipliers.left.y,
+        rotation: currentX.current * 0.5, // минимальный поворот
+        ease: 'power1.inOut', // добавляем easing для плавности
       });
+      
       gsap.set(rightPhone.current, {
         x: currentX.current * multipliers.right.x,
         y: currentY.current * multipliers.right.y,
+        rotation: currentX.current * 0.5,
+        ease: 'power1.inOut',
       });
+      
+      // Экран двигается с дополнительным замедлением
+      const notifLerpFactor = 0.04; // еще медленнее для экрана
+      const notifX = currentX.current + (targetX.current - currentX.current) * notifLerpFactor;
+      const notifY = currentY.current + (targetY.current - currentY.current) * notifLerpFactor;
+      
       gsap.set(notification.current, {
-        x: currentX.current * multipliers.notif.x,
-        y: currentY.current * multipliers.notif.y,
+        x: notifX * multipliers.notif.x,
+        y: notifY * multipliers.notif.y,
+        rotation: currentX.current * 0.2, // почти без поворота
+        ease: 'power1.inOut',
       });
     };
 
@@ -201,7 +221,14 @@ export default function TwoMobile() {
           {/* LEFT BLOCK */}
           <div className="twomobile__block snap-step">
             <div className="twomobile__list-imgs">
-              <Image ref={leftPhone} src="/img/ipone-1.png" alt="" width={634} height={634} />
+              <Image 
+                ref={leftPhone} 
+                src="/img/ipone-1.png" 
+                alt="" 
+                width={634} 
+                height={634}
+                style={{ willChange: 'transform' }}
+              />
             </div>
             <div ref={leftText} className="twomobile__list-item">
               <div className="twomobile__list-item-title">
@@ -216,8 +243,22 @@ export default function TwoMobile() {
           {/* RIGHT BLOCK */}
           <div className="twomobile__block snap-step">
             <div className="twomobile__list-imgs">
-              <Image ref={rightPhone} src="/img/iphone-2.png" alt="" width={596} height={596} />
-              <Image ref={notification} src="/img/screen.png" alt="" width={403} height={609} />
+              <Image 
+                ref={rightPhone} 
+                src="/img/iphone-2.png" 
+                alt="" 
+                width={596} 
+                height={596}
+                style={{ willChange: 'transform' }}
+              />
+              <Image 
+                ref={notification} 
+                src="/img/screen.png" 
+                alt="" 
+                width={403} 
+                height={609}
+                style={{ willChange: 'transform' }}
+              />
             </div>
             <div ref={rightText} className="twomobile__list-item">
               <div className="twomobile__list-item-title">

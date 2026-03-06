@@ -14,6 +14,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   const isMobileRef = useRef(false);
   const touchStartYRef = useRef<number | null>(null);
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Обновление целей без изменения состояния
   const updateTargets = useCallback(() => {
@@ -30,16 +31,17 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     targetsRef.current = Array.from(document.querySelectorAll('.snap-section'));
   }, []);
 
-  // Переход к цели по индексу
-  const goToTarget = useCallback((index: number) => {
+  // Переход к цели по индексу (магнитный эффект)
+  const snapToTarget = useCallback((index: number, immediate = false) => {
     const targets = targetsRef.current;
     if (targets.length === 0 || index < 0 || index >= targets.length) return;
-    if (isAnimating.current) return;
+    if (isAnimating.current && !immediate) return;
 
     isAnimating.current = true;
+    
     lenisRef.current?.scrollTo(targets[index], {
       offset: 0,
-      duration: 1.2,
+      duration: immediate ? 0 : 0.8, // Быстрая, но плавная анимация
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       immediate: false,
       lock: true,
@@ -50,20 +52,69 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     });
   }, []);
 
-  // Определение текущей видимой цели
-  const getCurrentIndex = useCallback(() => {
+  // Определение ближайшей цели
+  const getClosestTargetIndex = useCallback(() => {
     const targets = targetsRef.current;
     if (targets.length === 0) return -1;
     
-    return targets.findIndex((el) => {
-      const rect = el.getBoundingClientRect();
-      return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
+    const scrollPosition = window.scrollY;
+    const windowHeight = window.innerHeight;
+    
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+    
+    targets.forEach((target, index) => {
+      const targetRect = target.getBoundingClientRect();
+      const targetTop = scrollPosition + targetRect.top;
+      const targetCenter = targetTop + targetRect.height / 2;
+      const viewportCenter = scrollPosition + windowHeight / 2;
+      
+      const distance = Math.abs(targetCenter - viewportCenter);
+      
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
     });
+    
+    return closestIndex;
   }, []);
+
+  // Обработка окончания скролла (магнитный эффект)
+  const handleScrollEnd = useCallback(() => {
+    if (isAnimating.current) return;
+    
+    const closestIndex = getClosestTargetIndex();
+    if (closestIndex !== -1) {
+      snapToTarget(closestIndex);
+    }
+  }, [getClosestTargetIndex, snapToTarget]);
+
+  // Обработчик скролла для сброса таймера
+  const handleScroll = useCallback(() => {
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    
+    // Устанавливаем новый таймер для срабатывания после остановки скролла
+    scrollTimeoutRef.current = setTimeout(handleScrollEnd, 150); // 150ms после остановки
+  }, [handleScrollEnd]);
 
   // Обработка свайпа
   const handleTouchStart = useCallback((e: TouchEvent) => {
     touchStartYRef.current = e.touches[0].clientY;
+    
+    // Отменяем запланированный магнитный эффект во время активного касания
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+  }, []);
+
+  const handleTouchMove = useCallback(() => {
+    // Сбрасываем таймер при движении
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
   }, []);
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
@@ -82,7 +133,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     }
 
     const direction = deltaY > 0 ? 'down' : 'up';
-    const currentIndex = getCurrentIndex();
+    const currentIndex = getClosestTargetIndex();
     const targets = targetsRef.current;
 
     if (currentIndex === -1) {
@@ -99,35 +150,24 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
 
     if (targetIndex !== currentIndex) {
       e.preventDefault();
-      goToTarget(targetIndex);
+      snapToTarget(targetIndex);
+    } else {
+      // Если свайп недостаточно сильный для переключения, просто примагничиваемся к текущему
+      setTimeout(() => {
+        snapToTarget(currentIndex);
+      }, 50);
     }
 
     touchStartYRef.current = null;
-  }, [goToTarget, getCurrentIndex]);
+  }, [snapToTarget, getClosestTargetIndex]);
 
   // Обработчик колеса мыши (для десктопа)
   const handleWheel = useCallback((e: WheelEvent) => {
-    const targets = targetsRef.current;
-    if (targets.length === 0) return;
-    if (isAnimating.current) return;
-
-    const direction = e.deltaY > 0 ? 'down' : 'up';
-    const currentIndex = getCurrentIndex();
-
-    if (currentIndex === -1) return;
-
-    let targetIndex = currentIndex;
-    if (direction === 'down' && currentIndex < targets.length - 1) {
-      targetIndex = currentIndex + 1;
-    } else if (direction === 'up' && currentIndex > 0) {
-      targetIndex = currentIndex - 1;
+    // Не блокируем обычный скролл, просто сбрасываем таймер
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
     }
-
-    if (targetIndex !== currentIndex) {
-      e.preventDefault();
-      goToTarget(targetIndex);
-    }
-  }, [goToTarget, getCurrentIndex]);
+  }, []);
 
   useEffect(() => {
     // Первичное обновление целей
@@ -152,19 +192,22 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       attributeFilter: ['class'],
     });
 
-    // Инициализация Lenis с поддержкой touch
+    // Инициализация Lenis
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      touchMultiplier: 2, // Ускоряем реакцию на touch
+      // smoothTouch: false, 
+      touchMultiplier: 2,
     });
     lenisRef.current = lenis;
 
-    // Добавляем обработчики touch событий
+    // Добавляем обработчики
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: false });
-    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     // RAF для Lenis
     function raf(time: number) {
@@ -180,25 +223,38 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         if (arguments.length && value !== undefined) {
           lenis.scrollTo(value);
         }
-        return lenis.scroll;
+        return window.scrollY; // Используем нативный scroll
       },
       getBoundingClientRect() {
         return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
       },
     });
 
+    // Первоначальный магнитный эффект после загрузки
+    setTimeout(() => {
+      const initialIndex = getClosestTargetIndex();
+      if (initialIndex !== -1) {
+        snapToTarget(initialIndex, true);
+      }
+    }, 100);
+
     return () => {
       lenis.destroy();
       window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
       window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('scroll', handleScroll);
       mql.removeEventListener('change', handleChange);
       observer.disconnect();
       if (touchTimeoutRef.current) {
         clearTimeout(touchTimeoutRef.current);
       }
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
     };
-  }, [handleTouchStart, handleTouchEnd, handleWheel, updateTargets]);
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd, handleWheel, handleScroll, updateTargets, getClosestTargetIndex, snapToTarget]);
 
   return <>{children}</>;
 }
