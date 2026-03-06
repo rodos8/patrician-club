@@ -1279,7 +1279,7 @@ section .container {
     height: auto;
   }
   section.cards {
-    padding-top: 15rem;
+    padding-top: 0;
   }
   .twomobile__list-imgs {
     order: 0;
@@ -1302,7 +1302,7 @@ section .container {
     left: 52rem;
   }
   .cards {
-    margin-top: 10rem;
+    margin-top: 0;
   }
   .twomobile__list {
     flex-direction: column;
