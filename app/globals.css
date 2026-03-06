@@ -893,6 +893,8 @@ section .container {
 }
 .cards__image-wrapper {
   margin-bottom: 1.6rem;
+  border-radius: 2.2rem;
+  overflow: hidden;
 }
 @media (max-width: 480px) {
   .cards__list-item img {
