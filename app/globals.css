@@ -414,7 +414,7 @@ section .container {
   --tint-hue: 180deg;
   --contrast: 1;
   --brightness: 1;
-  --invert: 5%;
+  --invert: 0.8%;
   --total-strength: calc(var(--base-strength) + var(--extra-blur));
   --edge-width: calc(0.3px + (var(--softness) * 0.1));
   --emboss-width: calc((var(--softness) * 0.38));
@@ -576,7 +576,7 @@ section .container {
   --tint-hue: 180deg;
   --contrast: 1;
   --brightness: 1;
-  --invert: 10%;
+  --invert: 0.8%;
   --total-strength: calc(var(--base-strength) + var(--extra-blur));
   --edge-width: calc(0.3px + (var(--softness) * 0.1));
   --emboss-width: calc((var(--softness) * 0.38));

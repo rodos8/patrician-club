@@ -52,7 +52,7 @@ export default function Cta() {
         </div>
 
         {/* Прямая ссылка на кнопку – работает благодаря forwardRef */}
-        <GlassButton ref={buttonRef} href="https://apps.apple.com/ru/app/patrician/id6503259972" target="_blank">Вступить</GlassButton>
+        <GlassButton ref={buttonRef} href="https://apps.apple.com/ru/app/patrician/id6503259972" target="_blank">Вступить в клуб</GlassButton>
       </div>
     </section>
   );
