@@ -226,9 +226,9 @@ opacity:0
 
 </div>
 
-<h3 className="cards__list-item-title">
+<h2 className="cards__list-item-title">
 Качество важнее количества
-</h3>
+</h2>
 
 <span/>
 
@@ -314,9 +314,9 @@ opacity:0
 
 </div>
 
-<h3 className="cards__list-item-title">
+<h2 className="cards__list-item-title">
 Без территориальных ограничений
-</h3>
+</h2>
 
 <span/>
 
@@ -358,9 +358,9 @@ opacity:0
 
 </div>
 
-<h3 className="cards__list-item-title">
+<h2 className="cards__list-item-title">
 Конфиденциальность
-</h3>
+</h2>
 
 <span/>
 
