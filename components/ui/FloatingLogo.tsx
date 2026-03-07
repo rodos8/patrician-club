@@ -82,8 +82,9 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
           gsap.to(logoRef.current, { 
             opacity: 1, 
             scale: 1.2, 
-            duration: 0.5,
+            duration: 1,
             ease: 'power2.out',
+            delay: 0.5,
           });
           break;
       }

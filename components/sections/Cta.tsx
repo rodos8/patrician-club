@@ -42,10 +42,10 @@ export default function Cta() {
   return (
     <section ref={sectionRef} className="cta snap-section h-screen snap-step">
       <div className="container">
-        <div ref={titleRef} className="cta__title">
+        <h2 ref={titleRef} className="cta__title">
           Любовь - дело случая,<br />
           Безопасность - дело принципа
-        </div>
+        </h2>
 
         <div ref={textRef} className="cta__text">
           Высокие стандарты. Абсолютная честность.

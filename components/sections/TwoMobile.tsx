@@ -1,252 +1,272 @@
 'use client';
 
-import { useLayoutEffect, useRef, useEffect, useState } from 'react';
-import Image from 'next/image';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useLayoutEffect, useRef, useEffect, useState } from 'react'
+import Image from 'next/image'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger)
 
 export default function TwoMobile() {
-  const sectionRef = useRef<HTMLDivElement>(null);
 
-  const leftPhone = useRef<HTMLImageElement>(null);
-  const rightPhone = useRef<HTMLImageElement>(null);
-  const notification = useRef<HTMLImageElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null)
 
-  const leftText = useRef<HTMLDivElement>(null);
-  const rightText = useRef<HTMLDivElement>(null);
+  const leftPhone = useRef<HTMLImageElement>(null)
+  const rightPhone = useRef<HTMLImageElement>(null)
+  const notification = useRef<HTMLImageElement>(null)
 
-  const glow = useRef<HTMLDivElement>(null);
-  
-  const [isMobile, setIsMobile] = useState(false);
-  const [isFirefox, setIsFirefox] = useState(false);
+  const leftText = useRef<HTMLDivElement>(null)
+  const rightText = useRef<HTMLDivElement>(null)
 
-  // Определяем браузер и устройство
-  useEffect(() => {
-    setIsMobile(window.matchMedia('(max-width: 767px)').matches);
-    setIsFirefox(navigator.userAgent.toLowerCase().includes('firefox'));
-  }, []);
+  const glow = useRef<HTMLDivElement>(null)
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
+  const [isMobile,setIsMobile] = useState(false)
+
+  useEffect(()=>{
+    setIsMobile(window.matchMedia('(max-width:900px)').matches)
+  },[])
+
+  /* ================= GSAP ================= */
+
+  useLayoutEffect(()=>{
+
+    const ctx = gsap.context(()=>{
+
+      const mm = gsap.matchMedia()
 
       /* ================= DESKTOP ================= */
-      mm.add('(min-width: 768px)', () => {
-        // Начальное состояние - убираем ease из set
-        gsap.set(leftPhone.current, { opacity: 0 });
-        gsap.set(rightPhone.current, { opacity: 0 });
-        gsap.set(notification.current, { opacity: 0 });
-        gsap.set([leftText.current, rightText.current], { opacity: 0 });
 
-        // Анимация появления при скролле - убираем ease для Firefox
-        gsap.to(leftPhone.current, {
-          opacity: 1,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'center center',
-            scrub: 4,
-          },
-        });
+      mm.add('(min-width:900px)',()=>{
 
-        gsap.to(rightPhone.current, {
-          opacity: 1,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'center center',
-            scrub: 4,
-          },
-        });
+        const elements = [
+          leftPhone.current,
+          rightPhone.current,
+          notification.current,
+          leftText.current,
+          rightText.current
+        ]
 
-        gsap.to(notification.current, {
-          opacity: 1,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'center center',
-            scrub: 6,
-          },
-        });
+        gsap.set(elements,{opacity:0})
 
-        gsap.to([leftText.current, rightText.current], {
-          opacity: 1,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'center center',
-            scrub: 4,
-          },
-        });
-      });
+        const tl = gsap.timeline({
+          scrollTrigger:{
+            trigger:sectionRef.current,
+            start:'top bottom',
+            end:'bottom top',
+            scrub:2
+          }
+        })
+
+        tl.to(elements,{
+          opacity:1,
+          duration:0.45
+        })
+
+        tl.to(elements,{
+          opacity:0,
+          duration:0.45
+        })
+
+      })
 
       /* ================= MOBILE ================= */
-      mm.add('(max-width: 767px)', () => {
-        gsap.set([leftPhone.current, rightPhone.current, notification.current, leftText.current, rightText.current], { opacity: 0 });
 
-        gsap.to([leftPhone.current, rightPhone.current, notification.current, leftText.current, rightText.current], {
-          opacity: 1,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'center center',
-            scrub: 3,
-          },
-        });
-      });
+      mm.add('(max-width:900px)',()=>{
+
+        const elements = [
+          leftPhone.current,
+          rightPhone.current,
+          notification.current,
+          leftText.current,
+          rightText.current
+        ]
+
+        gsap.set(elements,{opacity:0})
+
+        gsap.to(elements,{
+          opacity:1,
+          scrollTrigger:{
+            trigger:sectionRef.current,
+            start:'top bottom',
+            end:'center center',
+            scrub:2
+          }
+        })
+
+      })
 
       /* ================= GLOW ================= */
+
       gsap.fromTo(
         glow.current,
-        { scale: 0.3, opacity: 0 },
+        {scale:0.4,opacity:0},
         {
-          scale: 1.8,
-          opacity: 0.35,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top center',
-            end: 'bottom center',
-            scrub: 3,
-          },
+          scale:1.7,
+          opacity:0.35,
+          scrollTrigger:{
+            trigger:sectionRef.current,
+            start:'top center',
+            end:'bottom center',
+            scrub:2
+          }
         }
-      );
-    }, sectionRef);
+      )
 
-    return () => ctx.revert();
-  }, []);
+    },sectionRef)
 
-  // ========== ПАРАЛЛАКС ЭФФЕКТ ДЛЯ ВСЕХ БРАУЗЕРОВ ==========
-  useEffect(() => {
-    // Не запускаем на мобильных
-    if (isMobile) return;
+    return ()=>ctx.revert()
 
-    let animationFrame: number;
-    let mouseX = 0;
-    let mouseY = 0;
-    let currentX = 0;
-    let currentY = 0;
+  },[])
 
-    const multipliers = {
-      left: { x: 15, y: 15 },
-      right: { x: -8, y: -12 },
-      notif: { x: -5, y: -8 },
-    };
+  /* ================= ПАРАЛЛАКС МЫШИ ================= */
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 0.6;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 0.6;
-    };
+  useEffect(()=>{
 
-    const animate = () => {
-      if (!leftPhone.current || !rightPhone.current || !notification.current) return;
+    if(isMobile) return
 
-      // Плавная интерполяция
-      currentX += (mouseX - currentX) * 0.08;
-      currentY += (mouseY - currentY) * 0.08;
+    let raf:number
 
-      // Для Firefox используем transform3d для аппаратного ускорения
-      const transformStyle = isFirefox ? 'transform3d' : 'transform';
-      
-      // Применяем трансформации напрямую
-      leftPhone.current.style.transform = `translate3d(${currentX * multipliers.left.x}px, ${currentY * multipliers.left.y}px, 0) rotate(${currentX * 0.5}deg)`;
-      rightPhone.current.style.transform = `translate3d(${currentX * multipliers.right.x}px, ${currentY * multipliers.right.y}px, 0) rotate(${currentX * 0.5}deg)`;
-      
-      // Экран двигается медленнее
-      const notifX = currentX + (mouseX - currentX) * 0.04;
-      const notifY = currentY + (mouseY - currentY) * 0.04;
-      notification.current.style.transform = `translate3d(${notifX * multipliers.notif.x}px, ${notifY * multipliers.notif.y}px, 0) rotate(${currentX * 0.2}deg)`;
+    let mouseX = 0
+    let mouseY = 0
 
-      animationFrame = requestAnimationFrame(animate);
-    };
+    let currentX = 0
+    let currentY = 0
 
-    window.addEventListener('mousemove', handleMouseMove);
-    animate();
+    const handleMouseMove = (e:MouseEvent)=>{
 
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationFrame);
-      
-      // Сбрасываем трансформации
-      if (leftPhone.current) leftPhone.current.style.transform = '';
-      if (rightPhone.current) rightPhone.current.style.transform = '';
-      if (notification.current) notification.current.style.transform = '';
-    };
-  }, [isMobile, isFirefox]);
+      mouseX = (e.clientX/window.innerWidth - 0.5)
+      mouseY = (e.clientY/window.innerHeight - 0.5)
 
-  return (
+    }
+
+    const animate = ()=>{
+
+      if(!leftPhone.current || !rightPhone.current || !notification.current) return
+
+      currentX += (mouseX-currentX)*0.08
+      currentY += (mouseY-currentY)*0.08
+
+      leftPhone.current.style.transform =
+        `translate3d(${currentX*10}px,${currentY*10}px,0) rotate(${currentX*1.1}deg)`
+
+      rightPhone.current.style.transform =
+        `translate3d(${currentX*-10}px,${currentY*-10}px,0) rotate(${currentX*1.1}deg)`
+
+      notification.current.style.transform =
+        `translate3d(${currentX*-4}px,${currentY*-2}px,0)`
+
+      raf = requestAnimationFrame(animate)
+
+    }
+
+    window.addEventListener('mousemove',handleMouseMove)
+
+    animate()
+
+    return ()=>{
+
+      window.removeEventListener('mousemove',handleMouseMove)
+      cancelAnimationFrame(raf)
+
+    }
+
+  },[isMobile])
+
+  return(
+
     <section ref={sectionRef} className="twomobile snap-section h-screen">
+
       <div className="container">
+
         <div className="twomobile__list">
 
-          {/* LEFT BLOCK */}
           <div className="twomobile__block snap-step">
+
             <div className="twomobile__list-imgs">
-              <Image 
-                ref={leftPhone} 
-                src="/img/ipone-1.png" 
-                alt="" 
-                width={634} 
+
+              <Image
+                ref={leftPhone}
+                src="/img/ipone-1.png"
+                alt=""
+                width={634}
                 height={634}
-                style={{ 
-                  willChange: 'transform',
-                  transform: 'translateZ(0)', // Аппаратное ускорение
-                  backfaceVisibility: 'hidden', // Оптимизация для Firefox
+                style={{
+                  willChange:'transform',
+                  transform:'translateZ(0)',
+                  backfaceVisibility:'hidden'
                 }}
               />
+
             </div>
+
             <div ref={leftText} className="twomobile__list-item">
+
               <div className="twomobile__list-item-title">
-                Общие<br />ценности
+                Общие<br/>ценности
               </div>
+
               <div className="twomobile__list-item-text">
                 Фундамент для тех, кто строит совместное будущее
               </div>
+
             </div>
+
           </div>
 
-          {/* RIGHT BLOCK */}
           <div className="twomobile__block snap-step">
+
             <div className="twomobile__list-imgs">
-              <Image 
-                ref={rightPhone} 
-                src="/img/iphone-2.png" 
-                alt="" 
-                width={596} 
+
+              <Image
+                ref={rightPhone}
+                src="/img/iphone-2.png"
+                alt=""
+                width={596}
                 height={596}
-                style={{ 
-                  willChange: 'transform',
-                  transform: 'translateZ(0)',
-                  backfaceVisibility: 'hidden',
+                style={{
+                  willChange:'transform',
+                  transform:'translateZ(0)',
+                  backfaceVisibility:'hidden'
                 }}
               />
-              <Image 
-                ref={notification} 
-                src="/img/screen.png" 
-                alt="" 
-                width={403} 
-                height={609}
-                style={{ 
-                  willChange: 'transform',
-                  transform: 'translateZ(0)',
-                  backfaceVisibility: 'hidden',
+
+              <Image
+                ref={notification}
+                src="/img/screen.png"
+                alt=""
+                width={640}
+                height={1073}
+                style={{
+                  willChange:'transform',
+                  transform:'translateZ(0)',
+                  backfaceVisibility:'hidden'
                 }}
               />
+
             </div>
+
             <div ref={rightText} className="twomobile__list-item">
+
               <div className="twomobile__list-item-title">
-                Медицинский<br />протокол
+                Медицинский<br/>протокол
               </div>
+
               <div className="twomobile__list-item-text">
                 Обязательная верификация здоровья по 4 ключевым показателям
               </div>
+
             </div>
+
           </div>
 
         </div>
+
       </div>
-      <div ref={glow} className="twomobile__glow" />
+
+      <div ref={glow} className="twomobile__glow"/>
+
     </section>
-  );
+
+  )
+
 }

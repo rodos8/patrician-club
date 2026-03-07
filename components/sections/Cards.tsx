@@ -1,228 +1,274 @@
-'use client';
+'use client'
 
-import { useLayoutEffect, useRef } from 'react';
-import Image from 'next/image';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useLayoutEffect, useRef } from 'react'
+import Image from 'next/image'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger)
 
 export default function Cards() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef(null);
-  const glowRef = useRef(null);
-  const svgRefs = useRef<HTMLDivElement[]>([]);
-  const borderRefs = useRef<HTMLDivElement[]>([]); 
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const cards = gsap.utils.toArray<HTMLElement>('.cards__list-item');
-      
-      const centerCard = cards[1];
-      const sideCards = [cards[0], cards[2]];
-      const validSvgs = svgRefs.current.filter(Boolean);
-      const validBorders = borderRefs.current.filter(Boolean);
+const sectionRef = useRef<HTMLElement>(null)
+const glowRef = useRef<HTMLDivElement>(null)
 
-      gsap.set(sideCards, { opacity: 0, y: 40 });
-      gsap.set(centerCard, { opacity: 0, y: 30 });
-      gsap.set(validSvgs, { opacity: 0, scale: 1, y: 0 });
-      gsap.set(validBorders, { opacity: 0 }); 
+const svgRefs = useRef<HTMLDivElement[]>([])
+const borderRefs = useRef<HTMLDivElement[]>([])
 
-      const appearTimeline = gsap.timeline({
-        paused: true,
-      });
+useLayoutEffect(()=>{
 
-      appearTimeline
-        .to({}, { duration: 0.5 })
+const ctx = gsap.context(()=>{
 
-        // Боковые карточки появляются
-        .to(sideCards, {
-          opacity: 1,
-          y: 0,
-          duration: 1.2,
-          ease: 'power3.out',
-          stagger: 0,
-        })
+const mm = gsap.matchMedia()
 
-        // Центральная карточка начинает появляться, когда боковые почти на месте
-        .to(centerCard, {
-          opacity: 1,
-          y: 0,
-          duration: 1.2,
-          ease: 'power3.out',
-        }, '-=0.8') // Начинаем на 0.8с раньше окончания анимации боковых
+const cards = gsap.utils.toArray<HTMLElement>('.cards__list-item')
 
-        .to({}, { duration: 0.3 }) 
-        .to(validBorders, {
-          opacity: 1,
-          duration: 1.5,
-          ease: 'power2.inOut',
-          stagger: 0.1,
-        })
+const centerCard = cards[1]
+const sideCards = [cards[0],cards[2]]
 
-        .to({}, { duration: 0.2 });
+const validSvgs = svgRefs.current.filter(Boolean)
+const validBorders = borderRefs.current.filter(Boolean)
 
-      
-      appearTimeline.to(validSvgs[0], {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        duration: 3,
-        ease: 'power2.inOut',
-      }, 0.4);
 
-      if (validSvgs[1]) {
-        appearTimeline.to(validSvgs[1], {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 3,
-          ease: 'power2.inOut',
-        }, 1);
-      }
 
-      if (validSvgs[2]) {
-        appearTimeline.to(validSvgs[2], {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 3,
-          ease: 'power2.inOut',
-        }, 1.6);
-      }
 
-      appearTimeline.to({}, { duration: 0.5 });
 
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        onEnter: () => {
-          gsap.set(sideCards, { opacity: 0, y: 40 });
-          gsap.set(centerCard, { opacity: 0, y: 30 });
-          gsap.set(validSvgs, { opacity: 0, scale: 1, y: 0 });
-          gsap.set(validBorders, { opacity: 0 });
-          
-          appearTimeline.play(0);
-        },
-        onLeave: () => {
-          appearTimeline.progress(1);
-        },
-        onEnterBack: () => {
-          gsap.set(sideCards, { opacity: 0, y: 40 });
-          gsap.set(centerCard, { opacity: 0, y: 30 });
-          gsap.set(validSvgs, { opacity: 0, scale: 1, y: 0 });
-          gsap.set(validBorders, { opacity: 0 });
-          
-          appearTimeline.play(0);
-        },
-        onLeaveBack: () => {
-          appearTimeline.progress(0);
-        },
-      });
+/* ================= DESKTOP ================= */
 
-      if (sectionRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect();
-        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-        if (isVisible) {
-          setTimeout(() => {
-            gsap.to(sideCards, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' });
-            gsap.to(centerCard, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: 0.3 });
-            
-            gsap.to(validBorders, { 
-              opacity: 1, 
-              duration: 2, 
-              ease: 'power2.inOut',
-              stagger: 0,
-              delay: 0.8 
-            });
-            
-            gsap.to(validSvgs[0], { opacity: 1, scale: 1, y: 0, duration: 2.5, ease: 'power2.inOut', delay: 0.8 });
-            gsap.to(validSvgs[1], { opacity: 1, scale: 1, y: 0, duration: 2.5, ease: 'power2.inOut', delay: 1.2 });
-            gsap.to(validSvgs[2], { opacity: 1, scale: 1, y: 0, duration: 2.5, ease: 'power2.inOut', delay: 1.6 });
-          }, 300);
-        }
-      }
+mm.add('(min-width:768px)',()=>{
 
-      gsap.fromTo(glowRef.current,
-        { scale: 0.4, opacity: 0 },
-        {
-          scale: 1.2,
-          opacity: 0.4,
-          ease: 'sine.inOut',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top center',
-            end: 'bottom center',
-            scrub: 1.5,
-          },
-        }
-      );
+gsap.set(sideCards,{opacity:0,y:40})
+gsap.set(centerCard,{opacity:0,y:70})
 
-    }, sectionRef);
+gsap.set(validSvgs,{opacity:0})
+gsap.set(validBorders,{opacity:0})
 
-    return () => ctx.revert();
-  }, []);
+const tl = gsap.timeline({
+scrollTrigger:{
+trigger:sectionRef.current,
+start:'top 80%',
+end:'bottom 20%',
+toggleActions:'play none none reverse'
+}
+})
 
-  return (
-    <section ref={sectionRef} className="cards snap-section h-screen">
-      <div className="container">
-        <div ref={cardsRef} className="cards__list">
-          {/* CARD 1 - Левая */}
-          <div className="cards__list-item snap-step">
-            <div className="cards__image-wrapper" style={{ position: 'relative' }}>
-              <Image src="/img/image (4).png" alt="" width={330} height={330} />
-              <div 
-                ref={(el) => {
-                  if (el) borderRefs.current[0] = el;
-                }}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '2.4rem',
-                  borderLeft: '0.1rem solid transparent',
-                  borderRight: '0.1rem solid transparent',
-                  borderImageSource: 'linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, #ffffff 50.66%, rgba(255, 255, 255, 0) 95.9%)',
-                  borderImageSlice: 1,
-                  borderImageRepeat: 'stretch',
-                  pointerEvents: 'none',
-                  opacity: 0,
-                }}
-              />
-            </div>
-            <div className="cards__list-item-title">Качество важнее количества</div>
-            <span />
-            <p>Серьезные отношения, романтика, светское общение</p>
-          </div>
+/* карточки */
 
-          {/* CARD 2 - Центральная */}
-          <div className="cards__list-item snap-step">
-            <div className="cards__image-wrapper" style={{ position: 'relative' }}>
-              <Image src="/img/image (7).png" alt="" width={330} height={330} />
-              <div 
-                ref={(el) => {
-                  if (el) borderRefs.current[1] = el;
-                }}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '2.4rem',
-                  borderLeft: '0.1rem solid transparent',
-                  borderRight: '0.1rem solid transparent',
-                  borderImageSource: 'linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, #ffffff 50.66%, rgba(255, 255, 255, 0) 95.9%)',
-                  borderImageSlice: 1,
-                  borderImageRepeat: 'stretch',
-                  pointerEvents: 'none',
-                  opacity: 0,
-                }}
-              />
-              <div className="cards__svg-container">
+tl.to(sideCards,{
+opacity:1,
+y:0,
+duration:1.4,
+ease:'power3.out'
+},0)
+
+tl.to(centerCard,{
+opacity:1,
+y:0,
+duration:1.4,
+ease:'power3.out'
+},0)
+
+/* бордеры */
+
+tl.to(validBorders,{
+opacity:1,
+duration:1.5,
+ease:'power2.inOut',
+stagger:0.1
+},0.9)
+
+/* SVG */
+
+tl.to(validSvgs[0],{
+opacity:1,
+duration:2.5,
+ease:'power2.inOut'
+},1)
+
+if(validSvgs[1]){
+tl.to(validSvgs[1],{
+opacity:1,
+duration:2.5,
+ease:'power2.inOut'
+},1.4)
+}
+
+if(validSvgs[2]){
+tl.to(validSvgs[2],{
+opacity:1,
+duration:2.5,
+ease:'power2.inOut'
+},1.8)
+}
+
+})
+
+
+
+
+
+
+/* ================= MOBILE ================= */
+
+mm.add('(max-width:767px)',()=>{
+
+gsap.set(cards,{
+opacity:1,
+y:0
+})
+
+gsap.set(validBorders,{
+opacity:0
+})
+
+gsap.set(validSvgs,{
+opacity:0
+})
+
+cards.forEach((card,i)=>{
+
+const border = validBorders[i]
+
+const tl = gsap.timeline({
+scrollTrigger:{
+trigger:card,
+start:'top 70%',
+toggleActions:'play none none reverse'
+}
+})
+
+/* граница */
+
+tl.to(border,{
+opacity:1,
+duration:2,
+ease:'power2.out'
+}, 1)
+
+/* SVG только для второй карточки */
+
+if(i === 1){
+
+tl.to(validSvgs,{
+opacity:1,
+duration:0.8,
+stagger:0.3,
+ease:'power2.out'
+},'+=0.2')
+
+}
+
+})
+
+})
+
+
+
+
+
+/* ================= GLOW ================= */
+
+gsap.fromTo(
+glowRef.current,
+{scale:0.4,opacity:0},
+{
+scale:1.2,
+opacity:0.4,
+ease:'sine.inOut',
+scrollTrigger:{
+trigger:sectionRef.current,
+start:'top center',
+end:'bottom center',
+scrub:1.5
+}
+}
+)
+
+},sectionRef)
+
+return ()=>ctx.revert()
+
+},[])
+
+return(
+
+<section ref={sectionRef} className="cards snap-section h-screen">
+
+<div className="container">
+
+<div className="cards__list">
+
+{/* CARD 1 */}
+
+<div className="cards__list-item snap-step">
+
+<div className="cards__image-wrapper" style={{position:'relative'}}>
+
+<Image src="/img/image (4).png" alt="" width={330} height={330}/>
+
+<div
+ref={el=>{if(el)borderRefs.current[0]=el}}
+style={{
+position:'absolute',
+top:0,
+left:0,
+width:'100%',
+height:'100%',
+borderRadius:'2.4rem',
+borderLeft:'0.1rem solid transparent',
+borderRight:'0.1rem solid transparent',
+borderImageSource:'linear-gradient(0deg, rgba(255,255,255,0) 0%, #ffffff 50.66%, rgba(255,255,255,0) 95.9%)',
+borderImageSlice:1,
+pointerEvents:'none',
+opacity:0
+}}
+/>
+
+</div>
+
+<h3 className="cards__list-item-title">
+Качество важнее количества
+</h3>
+
+<span/>
+
+<p>
+Серьезные отношения, романтика, светское общение
+</p>
+
+</div>
+
+
+
+
+
+{/* CARD 2 */}
+
+<div className="cards__list-item snap-step">
+
+<div className="cards__image-wrapper" style={{position:'relative'}}>
+
+<Image src="/img/image (7).png" alt="" width={384} height={403}/>
+
+<div
+ref={el=>{if(el)borderRefs.current[1]=el}}
+style={{
+position:'absolute',
+top:0,
+left:0,
+width:'100%',
+height:'100%',
+borderRadius:'2.4rem',
+borderLeft:'0.1rem solid transparent',
+borderRight:'0.1rem solid transparent',
+borderImageSource:'linear-gradient(0deg, rgba(255,255,255,0) 0%, #ffffff 50.66%, rgba(255,255,255,0) 95.9%)',
+borderImageSlice:1,
+pointerEvents:'none',
+opacity:0
+}}
+/>
+
+ <div className="cards__svg-container">
                 {[
                   {
                     pos: ['12rem', '9.9rem'],
@@ -265,45 +311,73 @@ export default function Cards() {
                   </div>
                 ))}
               </div>
-            </div>
-            <div className="cards__list-item-title">Без территориальных ограничений</div>
-            <span />
-            <p>Основа - Москва и Санкт-Петербург. Общайтесь из любой точки России</p>
-          </div>
 
-          {/* CARD 3 - Правая */}
-          <div className="cards__list-item snap-step">
-            <div className="cards__image-wrapper" style={{ position: 'relative' }}>
-              <Image src="/img/image (6).png" alt="" width={330} height={330} />
-              <div 
-                ref={(el) => {
-                  if (el) borderRefs.current[2] = el;
-                }}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '2.4rem',
-                  borderLeft: '0.1rem solid transparent',
-                  borderRight: '0.1rem solid transparent',
-                  borderImageSource: 'linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, #ffffff 50.66%, rgba(255, 255, 255, 0) 95.9%)',
-                  borderImageSlice: 1,
-                  borderImageRepeat: 'stretch',
-                  pointerEvents: 'none',
-                  opacity: 0,
-                }}
-              />
-            </div>
-            <div className="cards__list-item-title">Конфиденциальность</div>
-            <span />
-            <p>Без публикации медицинских документов. В профиле только статус</p>
-          </div>
-        </div>
-      </div>
+</div>
 
-      <div ref={glowRef} className="cards__glow" />
-    </section>
-  );
+<h3 className="cards__list-item-title">
+Без территориальных ограничений
+</h3>
+
+<span/>
+
+<p>
+Основа - Москва и Санкт-Петербург. Общайтесь из любой точки России
+</p>
+
+</div>
+
+
+
+
+
+{/* CARD 3 */}
+
+<div className="cards__list-item snap-step">
+
+<div className="cards__image-wrapper" style={{position:'relative'}}>
+
+<Image src="/img/image (6).png" alt="" width={330} height={330}/>
+
+<div
+ref={el=>{if(el)borderRefs.current[2]=el}}
+style={{
+position:'absolute',
+top:0,
+left:0,
+width:'100%',
+height:'100%',
+borderRadius:'2.4rem',
+borderLeft:'0.1rem solid transparent',
+borderRight:'0.1rem solid transparent',
+borderImageSource:'linear-gradient(0deg, rgba(255,255,255,0) 0%, #ffffff 50.66%, rgba(255,255,255,0) 95.9%)',
+borderImageSlice:1,
+pointerEvents:'none',
+opacity:0
+}}
+/>
+
+</div>
+
+<h3 className="cards__list-item-title">
+Конфиденциальность
+</h3>
+
+<span/>
+
+<p>
+Без публикации медицинских документов. В профиле только статус
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div ref={glowRef} className="cards__glow"/>
+
+</section>
+
+)
+
 }

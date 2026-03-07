@@ -92,7 +92,7 @@ body {
     font-size: 50.5%;
   }
 }
-@media (min-width: 769px) and (max-width: 1440px) {
+@media (min-width: 1024px) and (max-width: 1440px) {
   .twomobile__list-imgs img:nth-child(1) {
     left: 19.3rem !important;
   }
@@ -864,6 +864,7 @@ section .container {
   gap: 1.6rem;
   opacity: 0;
 }
+
 .cards__svg-container div:nth-child(1) svg {
   width: 1.5rem;
   height: 1.7rem;
@@ -909,7 +910,7 @@ section .container {
 }
 .cards__list-item-title {
   font-weight: 300;
-  font-size: 18px;
+  font-size: 1.8rem;
   line-height: 120%;
   letter-spacing: normal;
   color: #ffffff;
@@ -1396,6 +1397,11 @@ section .container {
     font-size: 1.6rem;
   }
 }
+@media (min-height: 600px) and (max-width: 580px) {
+  .cards__list-item.snap-step {
+    height: 80vh;
+  }
+}
 @media (max-width: 480px) {
   /* размеры */
   .twomobile__list-imgs img:nth-child(1) {
@@ -1453,5 +1459,80 @@ section .container {
   [data-telegram="true"] .snap-step {
     min-height: 700px !important;
     height: 100%;
+  }
+}
+
+@media (min-width: 800px) and (max-width: 1024px) {
+  .twomobile__block:nth-child(1) .twomobile__list-item:last-child {
+    text-align: center;
+    margin: 0 auto;
+  }
+  .twomobile__list-item:last-child {
+    text-align: center;
+    margin: 0 auto;
+  }
+  .twomobile__block:nth-child(1) {
+    margin-bottom: 35rem;
+  }
+  section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .cards__list {
+    flex-direction: column;
+  }
+  .cards__list-item svg {
+    scale: 2;
+  }
+  .cards__list-item {
+    max-width: 100%;
+    height: auto;
+  }
+  .cards__image-wrapper {
+    position: relative;
+  }
+  .cards__list-item img {
+    width: 100%;
+    height: 100%;
+  }
+  .cards__list-item-title {
+    font-size: 2rem;
+  }
+  .cards__list {
+    gap: 20rem;
+  }
+  .cards__svg-container div:nth-child(1) {
+    top: 26rem !important;
+    right: 20rem !important;
+  }
+  .cards__svg-container div:nth-child(2) {
+    top: 30.8rem !important;
+    right: 24.2rem !important;
+  }
+  .cards__svg-container div:nth-child(3) {
+    top: 19.2rem !important;
+    right: 27.2rem !important;
+  }
+}
+
+@media (max-height: 500px) {
+  .twomobile__list-imgs img:nth-child(1) {
+    width: 90%;
+    max-width: 90%;
+  }
+  .twomobile__block:nth-child(2) .twomobile__list-imgs img:nth-child(2) {
+    position: absolute !important;
+    width: 60%;
+    height: auto;
+    margin-top: -6rem;
+    bottom: -1.7rem;
+  }
+  .hero img {
+    object-position: center -5rem;
+  }
+  .hero .container {
+    margin: auto auto 8rem;
   }
 }
