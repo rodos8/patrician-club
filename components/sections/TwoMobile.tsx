@@ -41,7 +41,7 @@ export default function TwoMobile() {
         const elements = [
           leftPhone.current,
           rightPhone.current,
-          notification.current,
+          // notification.current,
           leftText.current,
           rightText.current
         ]
