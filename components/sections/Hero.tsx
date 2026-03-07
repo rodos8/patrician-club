@@ -44,7 +44,6 @@ export default function Hero() {
         </h1>
 
         <GlassButton ref={buttonRef} href="https://apps.apple.com/ru/app/patrician/id6503259972" target="_blank">Вступить в клуб</GlassButton>
-
         <p ref={textRef}>
           <span>Эксклюзивно на IOS</span> Москва & Санкт-Петербург
         </p>

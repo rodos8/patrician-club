@@ -1536,3 +1536,108 @@ section .container {
     margin: auto auto 8rem;
   }
 }
+
+/* .glass-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px 40px;
+  height: 72px;
+
+  border-radius: 100px;
+
+  background: rgba(50, 50, 50, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+
+  box-shadow:
+    inset 2px 2px 1px -2px rgba(179, 179, 179, 0.4),
+    inset 0 0 22px rgba(242, 242, 242, 0.5),
+    inset 8px 8px 16px -18px rgba(255, 255, 255, 0.02),
+    inset -6px -6px 8px -14px rgba(179, 179, 179, 0.02);
+
+  overflow: hidden;
+  cursor: pointer;
+
+  transition: all 0.35s ease;
+}
+.glass-btn__content {
+  font-family: "Onest", sans-serif;
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 120%;
+  color: #fffdfd;
+}
+.glass-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.45),
+    rgba(255, 255, 255, 0.1) 35%,
+    transparent 60%
+  );
+
+  opacity: 0.25;
+  pointer-events: none;
+}
+.glass-btn::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(255, 255, 255, 0.6),
+    transparent 60%
+  );
+
+  opacity: 0.35;
+  filter: blur(8px);
+  z-index: -1;
+}
+.glass-btn:hover {
+  background: rgba(50, 50, 50, 0.55);
+
+  box-shadow:
+    inset 2px 2px 2px rgba(179, 179, 179, 0.45),
+    inset 0 0 28px rgba(242, 242, 242, 0.6),
+    0 12px 40px rgba(0, 0, 0, 0.35);
+} */
+
+.glass-btn {
+  width: fit-content;
+  margin: 0 auto;
+  padding: 2.4rem 8.3rem;
+  font-family: "Onest", serif;
+  font-weight: 300;
+  font-size: 2.4rem;
+  line-height: 120%;
+  letter-spacing: normal;
+  color: #fffdfd;
+  background-image: url(../public/img/button\ \(3\).png);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.cta .glass-btn {
+  background-image: url(../public/img/button\ \(4\).png);
+}
+.glass-btn:active {
+  background-image: url(../public/img/button\ \(2\).png);
+}
+
+@media (max-width: 580px) {
+  .glass-btn {
+    font-size: 1.6rem;
+    padding: 1.8rem 5rem;
+  }
+}
