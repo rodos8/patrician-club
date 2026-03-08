@@ -1376,14 +1376,9 @@ section .container {
   /* 1. Запасной фон (всегда) */
 
   /* 2. Основной эффект с префиксами */
-  -webkit-backdrop-filter: saturate(180%) blur(3px);
-  backdrop-filter: saturate(180%) blur(3px);
 
-  /* 3. Аппаратное ускорение для всех устройств */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+  backdrop-filter: saturate(180%) blur(3px);
+  -webkit-backdrop-filter: saturate(180%) blur(3px);
 }
 
 @media (max-width: 480px) {
@@ -1400,23 +1395,12 @@ section .container {
     background-color: #0e0e0f99;
 
     /* Альтернативный blur через filter (если внутри нет текста) */
-    /* -webkit-filter: blur(0.3rem);
-    filter: blur(0.3rem); */
+
+    filter: blur(0.3rem);
+    -webkit-filter: blur(0.3rem);
   }
 }
 
-/* Специально для iOS (включая iPhone XR) */
-@supports (-webkit-touch-callout: none) {
-  .logo__header {
-    /* Усиливаем для Safari на iOS */
-    -webkit-backdrop-filter: blur(3px) !important;
-    backdrop-filter: blur(3px) !important;
-
-    /* Дополнительная оптимизация */
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
 @media (max-width: 768px) {
   .snap-step {
     height: 100vh; /* или min-height: 100vh, если контент короче */

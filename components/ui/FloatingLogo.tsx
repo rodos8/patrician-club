@@ -210,9 +210,11 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
         left: '0',
         zIndex: 100,
         opacity: 0,
-        pointerEvents: 'none',
+        pointerEvents: 'auto',
         transition: 'opacity 0.2s ease',
         willChange: 'opacity, transform',
+        backdropFilter: 'saturate(180%) blur(3px)',
+    WebkitBackdropFilter: 'saturate(180%) blur(3px)',
       }}
     >
       <Logo />
