@@ -1376,8 +1376,8 @@ section .container {
   /* 1. Запасной фон (всегда) */
 
   /* 2. Основной эффект с префиксами */
-  -webkit-backdrop-filter: saturate(180%) blur(0.3rem);
-  backdrop-filter: saturate(180%) blur(0.3rem);
+  -webkit-backdrop-filter: saturate(180%) blur(3px);
+  backdrop-filter: saturate(180%) blur(3px);
 
   /* 3. Аппаратное ускорение для всех устройств */
   -webkit-transform: translateZ(0);
@@ -1393,7 +1393,7 @@ section .container {
 }
 /* Если backdrop-filter НЕ поддерживается */
 @supports not (
-  (-webkit-backdrop-filter: blur(0.3rem)) or (backdrop-filter: blur(0.3rem))
+  (-webkit-backdrop-filter: blur(3px)) or (backdrop-filter: blur(3px))
 ) {
   .logo__header {
     /* Более плотный фон как запасной вариант */
@@ -1409,8 +1409,8 @@ section .container {
 @supports (-webkit-touch-callout: none) {
   .logo__header {
     /* Усиливаем для Safari на iOS */
-    -webkit-backdrop-filter: blur(0.3rem) !important;
-    backdrop-filter: blur(0.3rem) !important;
+    -webkit-backdrop-filter: blur(3px) !important;
+    backdrop-filter: blur(3px) !important;
 
     /* Дополнительная оптимизация */
     -webkit-transform: translate3d(0, 0, 0);
