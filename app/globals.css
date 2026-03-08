@@ -1374,11 +1374,10 @@ section .container {
   padding: 2.4rem 0;
 
   /* 1. Запасной фон (всегда) */
-  background-color: #0e0e0f99;
 
   /* 2. Основной эффект с префиксами */
-  -webkit-backdrop-filter: blur(0.3rem);
-  backdrop-filter: blur(0.3rem);
+  -webkit-backdrop-filter: saturate(180%) blur(0.3rem);
+  backdrop-filter: saturate(180%) blur(0.3rem);
 
   /* 3. Аппаратное ускорение для всех устройств */
   -webkit-transform: translateZ(0);
@@ -1387,6 +1386,11 @@ section .container {
   backface-visibility: hidden;
 }
 
+@media (max-width: 480px) {
+  .logo__header {
+    background-color: #0e0e0f99;
+  }
+}
 /* Если backdrop-filter НЕ поддерживается */
 @supports not (
   (-webkit-backdrop-filter: blur(0.3rem)) or (backdrop-filter: blur(0.3rem))
