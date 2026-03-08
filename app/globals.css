@@ -1688,6 +1688,12 @@ section .container {
   [data-telegram] .snap-step {
     height: 600px !important;
   }
+  [data-telegram] section.cards {
+    height: 2100px;
+  }
+  [data-telegram] .cta .container {
+    height: 600px;
+  }
 }
 
 .footer--hidden {
