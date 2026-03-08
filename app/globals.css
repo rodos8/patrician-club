@@ -1681,6 +1681,15 @@ section .container {
   top: env(safe-area-inset-top, 0);
 }
 
+[data-telegram] .snap-step {
+  height: 600px !important;
+}
+@media ((max-width: 768px)) {
+  [data-telegram] .snap-step {
+    height: 600px !important;
+  }
+}
+
 .footer--hidden {
   opacity: 0;
   transition: opacity 0.8s ease-in-out;
