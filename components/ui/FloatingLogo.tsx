@@ -12,7 +12,7 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
   // Определяем мобильное устройство
   useEffect(() => {
     const checkMobile = () => {
-      const mobile = window.matchMedia('(max-width: 767px)').matches;
+      const mobile = window.matchMedia('(max-width: 1024px)').matches;
       setIsMobile(mobile);
     };
     
@@ -114,8 +114,6 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
       style={{
         position: 'fixed',
         top: '0',
-        left: '50%',
-        transform: 'translateX(-50%)',
         zIndex: 100,
         opacity: 0,
         pointerEvents: 'none',

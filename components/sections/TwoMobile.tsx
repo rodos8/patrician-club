@@ -23,7 +23,7 @@ export default function TwoMobile() {
   const [isMobile,setIsMobile] = useState(false)
 
   useEffect(()=>{
-    setIsMobile(window.matchMedia('(max-width:900px)').matches)
+    setIsMobile(window.matchMedia('(max-width:1025px)').matches)
   },[])
 
   /* ================= GSAP ================= */
@@ -36,7 +36,7 @@ export default function TwoMobile() {
 
       /* ================= DESKTOP ================= */
 
-      mm.add('(min-width:900px)',()=>{
+      mm.add('(min-width:1025px)',()=>{
 
         const elements = [
           leftPhone.current,
@@ -71,7 +71,7 @@ export default function TwoMobile() {
 
       /* ================= MOBILE ================= */
 
-      mm.add('(max-width:900px)',()=>{
+      mm.add('(max-width:1025px)',()=>{
 
         const elements = [
           leftPhone.current,
