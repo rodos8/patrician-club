@@ -92,6 +92,23 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     };
   }, [isClient, isTelegram]);
 
+  // В вашем SmoothScroll компоненте
+useEffect(() => {
+  const ua = navigator.userAgent.toLowerCase();
+  const isTelegramApp = ua.includes('telegram') || ua.includes('tgweb');
+  
+  if (isTelegramApp) {
+    // Добавляем КЛАСС, а не атрибут - классы работают везде
+    document.documentElement.classList.add('is-telegram');
+    document.body.classList.add('is-telegram');
+  }
+  
+  return () => {
+    document.documentElement.classList.remove('is-telegram');
+    document.body.classList.remove('is-telegram');
+  };
+}, []);
+
   // Больше никакого условного рендеринга с хуками!
   // Просто возвращаем children, все стили применяются через CSS и атрибуты
   return <>{children}</>;
