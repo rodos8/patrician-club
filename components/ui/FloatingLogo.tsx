@@ -9,6 +9,7 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
   const prevSectionRef = useRef(currentSection);
+  const lastScrollYRef = useRef(0);
 
   // Определяем мобильное устройство
   useEffect(() => {
@@ -132,32 +133,76 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
     }
   }, [currentSection, isMobile, mounted]);
 
-  // Отдельный эффект для обработки скролла в мобильной версии
+  // Улучшенный эффект для обработки скролла
   useEffect(() => {
-    if (!isMobile || !logoRef.current || !mounted) return;
+    if (!logoRef.current || !mounted) return;
     
     const logo = logoRef.current;
     
     const handleScroll = () => {
-      // Если пользователь проскроллил мимо hero секции
-      if (window.scrollY > 100 && currentSection === 0 && logo) {
-        gsap.set(logo, { 
-          opacity: 1, 
+      const currentScrollY = window.scrollY;
+      const isScrollingUp = currentScrollY < lastScrollYRef.current;
+      
+      // Определяем, находимся ли мы на Hero секции (верх страницы)
+      const isAtTop = currentScrollY < 100;
+      
+      // Если скроллим вверх и дошли до Hero секции
+      if (isScrollingUp && isAtTop) {
+        // Скрываем лого
+        gsap.to(logo, {
+          opacity: 0,
           scale: 1,
-          immediateRender: true,
+          duration: 0.3,
+          ease: 'power2.out',
+          overwrite: true
+        });
+        logo.style.pointerEvents = 'none';
+      }
+      
+      // Если скроллим вниз от Hero секции
+      if (!isScrollingUp && currentSection === 0 && currentScrollY > 100) {
+        // Показываем лого
+        gsap.to(logo, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.3,
+          ease: 'power2.out',
           overwrite: true
         });
         logo.style.pointerEvents = 'auto';
       }
+      
+      // Обновляем для мобильных
+      if (isMobile) {
+        if (currentScrollY < 100) {
+          gsap.set(logo, {
+            opacity: 0,
+            scale: 1,
+            immediateRender: true,
+            overwrite: true
+          });
+          logo.style.pointerEvents = 'none';
+        } else if (currentSection === 0 && currentScrollY > 100) {
+          gsap.set(logo, {
+            opacity: 1,
+            scale: 1,
+            immediateRender: true,
+            overwrite: true
+          });
+          logo.style.pointerEvents = 'auto';
+        }
+      }
+      
+      lastScrollYRef.current = currentScrollY;
     };
     
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isMobile, mounted, currentSection]);
 
   return (
     <div 
-    className='logo__header'
+      className='logo__header'
       ref={logoRef}
       style={{
         position: 'fixed',
