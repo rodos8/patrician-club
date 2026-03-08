@@ -1371,19 +1371,48 @@ section .container {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2.4rem 0 2.4rem 0;
-  -webkit-backdrop-filter: blur(0.3rem); /* Safari 9+, iOS Safari 9+ */
-  backdrop-filter: blur(0.3rem); /* Современные браузеры */
+  padding: 2.4rem 0;
+
+  /* 1. Запасной фон (всегда) */
+  background-color: #0e0e0f70;
+
+  /* 2. Основной эффект с префиксами */
+  -webkit-backdrop-filter: blur(0.3rem);
+  backdrop-filter: blur(0.3rem);
+
+  /* 3. Аппаратное ускорение для всех устройств */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
+
+/* Если backdrop-filter НЕ поддерживается */
 @supports not (
-  (-webkit-backdrop-filter: blur(5px)) or (backdrop-filter: blur(5px))
+  (-webkit-backdrop-filter: blur(0.3rem)) or (backdrop-filter: blur(0.3rem))
 ) {
   .logo__header {
-    -webkit-backdrop-filter: blur(0.3rem); /* Safari 9+, iOS Safari 9+ */
-    backdrop-filter: blur(0.3rem); /* Современные браузеры */
+    /* Более плотный фон как запасной вариант */
+    background-color: #0e0e0f70;
+
+    /* Альтернативный blur через filter (если внутри нет текста) */
+    /* -webkit-filter: blur(0.3rem);
+    filter: blur(0.3rem); */
   }
 }
 
+/* Специально для iOS (включая iPhone XR) */
+@supports (-webkit-touch-callout: none) {
+  .logo__header {
+    /* Усиливаем для Safari на iOS */
+    -webkit-backdrop-filter: blur(0.3rem) !important;
+    backdrop-filter: blur(0.3rem) !important;
+
+    /* Дополнительная оптимизация */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
 @media (max-width: 768px) {
   .snap-step {
     height: 100vh; /* или min-height: 100vh, если контент короче */
