@@ -1681,15 +1681,6 @@ section .container {
   top: env(safe-area-inset-top, 0);
 }
 
-[data-telegram] .snap-step {
-  height: 600px !important;
-}
-@media (max-width: 768px) {
-  [data-telegram] .snap-step {
-    height: 600px !important;
-  }
-}
-
 .footer--hidden {
   opacity: 0;
   transition: opacity 0.8s ease-in-out;
@@ -1697,4 +1688,72 @@ section .container {
 
 .footer--visible {
   opacity: 1;
+}
+
+/* Глобальные стили для Telegram фикса */
+[data-telegram] {
+  /* Стабильная высота viewport */
+  --stable-vh: 100vh;
+  --viewport-height: 100vh;
+}
+
+[data-telegram] * {
+  /* Предотвращаем мерцание при скролле */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+[data-telegram] .fixed-height {
+  height: var(--stable-vh, 100vh) !important;
+  min-height: var(--stable-vh, 100vh) !important;
+  max-height: var(--stable-vh, 100vh) !important;
+  /* Используем transform для стабильного позиционирования */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Предотвращаем изменение размеров при скролле */
+[data-telegram] .content-wrapper {
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Фикс для элементов с position fixed */
+[data-telegram] .fixed-element {
+  position: fixed !important;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Анимации для плавности */
+[data-telegram] .snap-step {
+  transition: height 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: height;
+  contain: layout style paint;
+}
+
+/* Медиа запросы с учетом стабильной высоты */
+@media (max-width: 768px) {
+  [data-telegram] .snap-step {
+    height: min(600px, var(--stable-vh, 100vh)) !important;
+    max-height: min(600px, var(--stable-vh, 100vh)) !important;
+  }
+}
+
+/* Дополнительная защита от изменения размеров */
+[data-telegram] .vh-protect {
+  height: calc(var(--stable-vh, 1vh) * 100) !important;
+  min-height: calc(var(--stable-vh, 1vh) * 100) !important;
+  max-height: calc(var(--stable-vh, 1vh) * 100) !important;
+  box-sizing: border-box;
+  overflow: hidden;
 }
