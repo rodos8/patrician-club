@@ -206,6 +206,18 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
       }}
     >
       <Logo />
+       <div 
+      className='logo__header'
+      ref={logoRef}
+      style={{
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        pointerEvents: 'auto',
+        transition: 'opacity 0.2s ease, transform 0.8s ease',
+        willChange: 'opacity, transform',
+      }}
+    ></div>
     </div>
   );
 }

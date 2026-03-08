@@ -1380,6 +1380,16 @@ section .container {
   backdrop-filter: saturate(180%) blur(3px);
   -webkit-backdrop-filter: saturate(180%) blur(3px);
 }
+.logo__header .logo__header {
+  height: 100%;
+  backdrop-filter: saturate(180%) blur(3px);
+  -webkit-backdrop-filter: saturate(180%) blur(3px);
+  content: "";
+  z-index: -1;
+}
+.logo__header svg {
+  z-index: 1000;
+}
 
 @media (max-width: 480px) {
   .logo__header {
