@@ -12,7 +12,12 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   const [isClient, setIsClient] = useState(false);
   const lenisRef = useRef<Lenis | null>(null);
 
-  // Проверка Telegram
+  // Функция для обновления CSS переменной с реальной высотой окна
+  const updateVhVariable = () => {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  };
+
   useEffect(() => {
     setIsClient(true);
     
@@ -21,25 +26,62 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     
     setIsTelegram(isTelegramApp);
     
-    // Добавляем data-атрибут для CSS
     if (isTelegramApp) {
       document.documentElement.setAttribute('data-telegram', 'true');
       document.body.setAttribute('data-telegram', 'true');
+      
+      // Инициализация переменной vh
+      updateVhVariable();
+      
+      // Обновляем переменную при изменении размера окна и скролле
+      window.addEventListener('resize', updateVhVariable);
+      window.addEventListener('scroll', updateVhVariable);
+      window.addEventListener('orientationchange', updateVhVariable);
+      
+      // Дополнительная проверка через MutationObserver для обнаружения изменений UI
+      const observer = new MutationObserver(updateVhVariable);
+      observer.observe(document.body, { 
+        attributes: true, 
+        childList: true, 
+        subtree: true 
+      });
+      
+      return () => {
+        document.documentElement.removeAttribute('data-telegram');
+        document.body.removeAttribute('data-telegram');
+        window.removeEventListener('resize', updateVhVariable);
+        window.removeEventListener('scroll', updateVhVariable);
+        window.removeEventListener('orientationchange', updateVhVariable);
+        observer.disconnect();
+      };
     } else {
       document.documentElement.removeAttribute('data-telegram');
       document.body.removeAttribute('data-telegram');
     }
     
     return () => {
-      // Очищаем при размонтировании
       document.documentElement.removeAttribute('data-telegram');
       document.body.removeAttribute('data-telegram');
     };
   }, []);
 
-  // Для Telegram - только нативный скролл
+  // Для Telegram - только нативный скролл с фиксом vh
   if (isClient && isTelegram) {
-    return <>{children}</>;
+    return (
+      <div className="telegram-fix">
+        <style jsx>{`
+          .telegram-fix {
+            display: contents;
+          }
+          
+          /* Глобальные стили для фикса vh в Telegram */
+          :global([data-telegram] .vh-fix) {
+            height: calc(var(--vh, 1vh) * 100) !important;
+          }
+        `}</style>
+        {children}
+      </div>
+    );
   }
 
   // Для остальных браузеров - Lenis
@@ -50,6 +92,9 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      // Добавляем настройки для лучшей совместимости
+      touchMultiplier: 2,
+      infinite: false,
     });
     
     lenisRef.current = lenis;

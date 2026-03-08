@@ -201,9 +201,9 @@ export default function TwoMobile() {
 
             <div ref={leftText} className="twomobile__list-item">
 
-              <div className="twomobile__list-item-title">
+              <h2 className="twomobile__list-item-title">
                 Общие<br/>ценности
-              </div>
+              </h2>
 
               <div className="twomobile__list-item-text">
                 Фундамент для тех, кто строит совместное будущее
@@ -247,9 +247,9 @@ export default function TwoMobile() {
 
             <div ref={rightText} className="twomobile__list-item">
 
-              <div className="twomobile__list-item-title">
+              <h2 className="twomobile__list-item-title">
                 Медицинский<br/>протокол
-              </div>
+              </h2>
 
               <div className="twomobile__list-item-text">
                 Обязательная верификация здоровья по 4 ключевым показателям

@@ -1644,3 +1644,39 @@ section .container {
     padding: 1.8rem 5rem;
   }
 }
+
+/* Глобальные стили для фикса Telegram */
+[data-telegram] {
+  /* Базовая переменная для vh */
+  --vh: 1vh;
+}
+
+[data-telegram] .vh-100 {
+  height: calc(var(--vh, 1vh) * 100) !important;
+}
+
+[data-telegram] .min-vh-100 {
+  min-height: calc(var(--vh, 1vh) * 100) !important;
+}
+
+[data-telegram] .max-vh-100 {
+  max-height: calc(var(--vh, 1vh) * 100) !important;
+}
+
+/* Отключаем smooth scroll в Telegram */
+[data-telegram] {
+  scroll-behavior: auto !important;
+}
+
+[data-telegram] * {
+  scroll-behavior: auto !important;
+}
+
+/* Фикс для фиксированных элементов */
+[data-telegram] .fixed-bottom {
+  bottom: env(safe-area-inset-bottom, 0);
+}
+
+[data-telegram] .fixed-top {
+  top: env(safe-area-inset-top, 0);
+}
