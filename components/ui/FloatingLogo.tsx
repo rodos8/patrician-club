@@ -10,6 +10,7 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
   const [mounted, setMounted] = useState(false);
   const prevSectionRef = useRef(currentSection);
   const lastScrollYRef = useRef(0);
+  const scaleTweenRef = useRef<gsap.core.Tween | null>(null);
 
   // Определяем мобильное устройство
   useEffect(() => {
@@ -51,89 +52,75 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
     
   }, [mounted, isMobile, currentSection]);
 
-  // Эффект для анимаций при смене секции
+  // Эффект для анимаций при смене секции - ИСПРАВЛЕН ДЛЯ ПЛАВНОГО ИЗМЕНЕНИЯ РАЗМЕРА
   useEffect(() => {
-    if (!logoRef.current || !mounted) return;
+    if (!logoRef.current || !mounted || isMobile) return;
     
     const logo = logoRef.current;
     
     // Сохраняем предыдущую секцию
     prevSectionRef.current = currentSection;
     
-    // Останавливаем все текущие анимации
-    gsap.killTweensOf(logo);
+    // Останавливаем только предыдущую анимацию размера, но не все анимации
+    if (scaleTweenRef.current) {
+      scaleTweenRef.current.kill();
+    }
     
     // Обновляем pointer-events
     if (logo) {
       logo.style.pointerEvents = currentSection === 0 ? 'none' : 'auto';
     }
     
-    if (isMobile) {
-      // Для мобильных - принудительно устанавливаем opacity
-      gsap.set(logo, { 
-        opacity: currentSection === 0 ? 0 : 1, 
-        scale: 1,
-        immediateRender: true,
-        overwrite: true
-      });
-    } else {
-      // Для десктопа - анимации
-      switch (currentSection) {
-        case 0: // Hero – скрыт
-          gsap.to(logo, { 
-            opacity: 0, 
-            scale: 1, 
-            duration: 0.3,
-            ease: 'power2.out',
-            overwrite: true,
-            onUpdate: function() {
-              if (logo && this.progress === 1) {
-                logo.style.pointerEvents = 'none';
-              }
-            }
-          });
-          break;
-        case 1: // TwoMobile – появляется
-          gsap.to(logo, { 
-            opacity: 1, 
-            scale: 1, 
-            duration: 0.5,
-            ease: 'power2.out',
-            overwrite: true
-          });
-          break;
-        case 2: // Cards – без изменений
-          gsap.to(logo, { 
-            opacity: 1, 
-            scale: 1, 
-            duration: 0.3,
-            ease: 'power2.out',
-            overwrite: true
-          });
-          break;
-        case 3: // Cta – увеличивается
-          gsap.to(logo, { 
-            opacity: 1, 
-            scale: 1.2, 
-            duration: 1,
-            ease: 'power2.out',
-            delay: 0.5,
-            overwrite: true
-          });
-          break;
-        default:
-          // Для любых других секций показываем лого
-          gsap.set(logo, { 
-            opacity: 1, 
-            scale: 1,
-            immediateRender: true,
-            overwrite: true
-          });
-      }
+    // Для десктопа - анимации с приоритетом на плавность
+    switch (currentSection) {
+      case 0: // Hero – скрыт
+        gsap.to(logo, { 
+          opacity: 0, 
+          scale: 1, 
+          duration: 0.4,
+          ease: 'power2.inOut',
+          overwrite: true,
+        });
+        break;
+      case 1: // TwoMobile – появляется
+      case 2: // Cards – без изменений
+        gsap.to(logo, { 
+          opacity: 1, 
+          scale: 1, 
+          duration: 0.4,
+          ease: 'power2.out',
+          overwrite: true,
+        });
+        break;
+      case 3: // Cta – увеличивается
+        // Сохраняем ссылку на анимацию размера
+        scaleTweenRef.current = gsap.to(logo, { 
+          scale: 1.2, 
+          duration: 0,
+          ease: 'power2.out',
+          delay: 0.3,
+          overwrite: true,
+        });
+        
+        // Opacity анимируем отдельно
+        gsap.to(logo, { 
+          opacity: 1, 
+          duration: 0.3,
+          ease: 'power2.out',
+          overwrite: false,
+        });
+        break;
+      default:
+        gsap.set(logo, { 
+          opacity: 1, 
+          scale: 1,
+          immediateRender: true,
+          overwrite: true,
+        });
     }
   }, [currentSection, isMobile, mounted]);
 
-  // Улучшенный эффект для обработки скролла
+  // Улучшенный эффект для обработки скролла - с сохранением плавности размера
   useEffect(() => {
     if (!logoRef.current || !mounted) return;
     
@@ -148,31 +135,34 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
       
       // Если скроллим вверх и дошли до Hero секции
       if (isScrollingUp && isAtTop) {
-        // Скрываем лого
+        // Плавно скрываем с возвратом к нормальному размеру
         gsap.to(logo, {
           opacity: 0,
-          scale: 1,
-          duration: 0.3,
-          ease: 'power2.out',
-          overwrite: true
+          scale: 1, // Возвращаем к 1, если был увеличен
+          duration: 0.4,
+          ease: 'power2.inOut',
+          overwrite: true,
+          onComplete: () => {
+            logo.style.pointerEvents = 'none';
+          }
         });
-        logo.style.pointerEvents = 'none';
       }
       
       // Если скроллим вниз от Hero секции
       if (!isScrollingUp && currentSection === 0 && currentScrollY > 100) {
-        // Показываем лого
         gsap.to(logo, {
           opacity: 1,
           scale: 1,
-          duration: 0.3,
+          duration: 0.4,
           ease: 'power2.out',
-          overwrite: true
+          overwrite: true,
+          onStart: () => {
+            logo.style.pointerEvents = 'auto';
+          }
         });
-        logo.style.pointerEvents = 'auto';
       }
       
-      // Обновляем для мобильных
+      // Для мобильных
       if (isMobile) {
         if (currentScrollY < 100) {
           gsap.set(logo, {
@@ -211,10 +201,8 @@ export default function FloatingLogo({ currentSection }: { currentSection: numbe
         zIndex: 100,
         opacity: 0,
         pointerEvents: 'auto',
-        transition: 'opacity 0.2s ease',
+        transition: 'opacity 0.2s ease, transform 0.8s ease',
         willChange: 'opacity, transform',
-        backdropFilter: 'saturate(180%) blur(3px)',
-    WebkitBackdropFilter: 'saturate(180%) blur(3px)',
       }}
     >
       <Logo />
