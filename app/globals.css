@@ -1458,7 +1458,7 @@ section .container {
 }
 
 @media (max-width: 699px) {
-  [data-telegram="true"] .snap-step {
+  [data-telegram="true"].snap-step {
     min-height: 700px !important;
     height: 100%;
   }
@@ -1684,15 +1684,18 @@ section .container {
 [data-telegram="true"] .snap-step {
   height: 600px !important;
 }
-@media (max-width: 768px) {
-  [data-telegram="true"] .snap-step {
+@media (max-width: 480px) {
+  .snap-step {
+    height: 700px !important;
+  }
+  section.twomobile {
+    height: 1450px !important;
+  }
+  section.cards {
+    height: 2100px !important;
+  }
+  .cta .container {
     height: 600px !important;
-  }
-  [data-telegram="true"] section.cards {
-    height: 2100px;
-  }
-  [data-telegram="true"] .cta .container {
-    height: 600px;
   }
 }
 
