@@ -1736,7 +1736,7 @@ section .container {
     height: 600px !important;
   }
 }
-@media (max-width: 480px) and (max-height: 950px) {
+/* @media (max-width: 480px) and (max-height: 950px) {
   .hero.snap-step .snap-step {
     height: 700px !important;
   }
@@ -1820,7 +1820,7 @@ section .container {
   .hero.snap-step {
     height: 650px !important;
   }
-}
+} */
 
 .footer--hidden {
   opacity: 0;
