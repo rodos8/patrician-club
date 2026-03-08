@@ -1680,3 +1680,12 @@ section .container {
 [data-telegram] .fixed-top {
   top: env(safe-area-inset-top, 0);
 }
+
+.footer--hidden {
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.footer--visible {
+  opacity: 1;
+}
