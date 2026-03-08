@@ -1458,7 +1458,7 @@ section .container {
 }
 
 @media (max-width: 699px) {
-  .is-telegram.snap-step {
+  [data-telegram="true"].snap-step {
     min-height: 700px !important;
     height: 100%;
   }
@@ -1646,55 +1646,55 @@ section .container {
 }
 
 /* Глобальные стили для фикса Telegram */
-.is-telegram {
+[data-telegram="true"] {
   /* Базовая переменная для vh */
   --vh: 1vh;
 }
 
-.is-telegram .vh-100 {
+[data-telegram="true"] .vh-100 {
   height: calc(var(--vh, 1vh) * 100) !important;
 }
 
-.is-telegram .min-vh-100 {
+[data-telegram="true"] .min-vh-100 {
   min-height: calc(var(--vh, 1vh) * 100) !important;
 }
 
-.is-telegram .max-vh-100 {
+[data-telegram="true"] .max-vh-100 {
   max-height: calc(var(--vh, 1vh) * 100) !important;
 }
 
 /* Отключаем smooth scroll в Telegram */
-.is-telegram {
+[data-telegram="true"] {
   scroll-behavior: auto !important;
 }
 
-.is-telegram * {
+[data-telegram="true"] * {
   scroll-behavior: auto !important;
 }
 
 /* Фикс для фиксированных элементов */
-.is-telegram .fixed-bottom {
+[data-telegram="true"] .fixed-bottom {
   bottom: env(safe-area-inset-bottom, 0);
 }
 
-.is-telegram .fixed-top {
+[data-telegram="true"] .fixed-top {
   top: env(safe-area-inset-top, 0);
 }
 
-.is-telegram .snap-step {
+[data-telegram="true"] .snap-step {
   height: 600px !important;
 }
 @media (max-width: 480px) {
-  .is-telegram .snap-step {
+  .snap-step {
     height: 700px !important;
   }
-  .is-telegram section.twomobile {
+  section.twomobile {
     height: 1450px !important;
   }
-  .is-telegram section.cards {
+  section.cards {
     height: 2100px !important;
   }
-  .is-telegram .cta .container {
+  .cta .container {
     height: 600px !important;
   }
 }
