@@ -1690,70 +1690,103 @@ section .container {
   opacity: 1;
 }
 
-/* Глобальные стили для Telegram фикса */
+/* Глобальные стили для Telegram */
 [data-telegram] {
-  /* Стабильная высота viewport */
-  --stable-vh: 100vh;
-  --viewport-height: 100vh;
+  --telegram-vh-fixed: 100vh; /* Фиксированное значение */
+  --telegram-vh: 1vh; /* Для обратной совместимости */
 }
 
-[data-telegram] * {
-  /* Предотвращаем мерцание при скролле */
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
-
-[data-telegram] .fixed-height {
-  height: var(--stable-vh, 100vh) !important;
-  min-height: var(--stable-vh, 100vh) !important;
-  max-height: var(--stable-vh, 100vh) !important;
-  /* Используем transform для стабильного позиционирования */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-/* Предотвращаем изменение размеров при скролле */
-[data-telegram] .content-wrapper {
-  position: relative;
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: visible;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-}
-
-/* Фикс для элементов с position fixed */
-[data-telegram] .fixed-element {
+[data-telegram],
+[data-telegram] body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden !important; /* Блокируем скролл на уровне body */
+  height: 100% !important;
   position: fixed !important;
+  width: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+[data-telegram] .telegram-container {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   will-change: transform;
 }
 
-/* Анимации для плавности */
+/* Жесткая фиксация размеров для snap элементов */
 [data-telegram] .snap-step {
-  transition: height 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  height: min(600px, var(--telegram-vh-fixed)) !important;
+  max-height: min(600px, var(--telegram-vh-fixed)) !important;
+  min-height: min(600px, var(--telegram-vh-fixed)) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  perspective: 1000 !important;
+  -webkit-perspective: 1000 !important;
+  contain: strict !important;
+  content-visibility: auto !important; /* Оптимизация рендеринга */
+  z-index: 1;
+}
+
+/* Изоляция контента внутри snap-step */
+[data-telegram] .snap-step > * {
+  position: relative;
+  z-index: 2;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  will-change: height;
+  backface-visibility: hidden;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   contain: layout style paint;
 }
 
-/* Медиа запросы с учетом стабильной высоты */
+/* Фикс для всех элементов, использующих vh */
+[data-telegram] * {
+  /* Принудительно используем фиксированную высоту для vh */
+  --vh: var(--telegram-vh);
+}
+
+/* Медиа-запросы для мобильных устройств */
 @media (max-width: 768px) {
   [data-telegram] .snap-step {
-    height: min(600px, var(--stable-vh, 100vh)) !important;
-    max-height: min(600px, var(--stable-vh, 100vh)) !important;
+    height: min(600px, var(--telegram-vh-fixed)) !important;
+    max-height: min(600px, var(--telegram-vh-fixed)) !important;
+    min-height: min(600px, var(--telegram-vh-fixed)) !important;
   }
 }
 
-/* Дополнительная защита от изменения размеров */
-[data-telegram] .vh-protect {
-  height: calc(var(--stable-vh, 1vh) * 100) !important;
-  min-height: calc(var(--stable-vh, 1vh) * 100) !important;
-  max-height: calc(var(--stable-vh, 1vh) * 100) !important;
-  box-sizing: border-box;
-  overflow: hidden;
+/* Дополнительная оптимизация для iOS */
+@supports (-webkit-touch-callout: none) {
+  [data-telegram] .snap-step {
+    /* Для iOS используем fixed для большей стабильности */
+    height: min(600px, 100vh) !important;
+    max-height: min(600px, 100vh) !important;
+    min-height: min(600px, 100vh) !important;
+    transform: translateZ(0) !important;
+  }
+}
+
+/* Предотвращаем мерцание */
+[data-telegram] .snap-step * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Плавные переходы (но не для высоты!) */
+[data-telegram] .snap-step {
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  /* Не добавляем transition для height! */
 }
