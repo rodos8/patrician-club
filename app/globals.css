@@ -1374,7 +1374,7 @@ section .container {
   padding: 2.4rem 0;
 
   /* 1. Запасной фон (всегда) */
-  background-color: #0e0e0f70;
+  background-color: #0e0e0f99;
 
   /* 2. Основной эффект с префиксами */
   -webkit-backdrop-filter: blur(0.3rem);
@@ -1393,7 +1393,7 @@ section .container {
 ) {
   .logo__header {
     /* Более плотный фон как запасной вариант */
-    background-color: #0e0e0f70;
+    background-color: #0e0e0f99;
 
     /* Альтернативный blur через filter (если внутри нет текста) */
     /* -webkit-filter: blur(0.3rem);
