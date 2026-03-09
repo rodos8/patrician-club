@@ -1880,3 +1880,26 @@ section .container {
     height: 930px !important;
   }
 }
+
+@media (min-height: 1179px) and (max-height: 1181px) and (max-width: 820px) {
+  .twomobile__list {
+    gap: 30rem;
+  }
+}
+
+@media (min-height: 1365px) and (max-height: 1367px) and (max-width: 1024px) {
+  .twomobile__list {
+    gap: 35rem;
+  }
+  .twomobile__list-imgs img:nth-child(1) {
+    width: 130%;
+    max-width: 130%;
+  }
+  .twomobile__block:nth-child(2) .twomobile__list-imgs img:nth-child(2) {
+    position: absolute !important;
+    width: 83%;
+    height: auto;
+    margin-top: -3rem;
+    bottom: -4rem;
+  }
+}
