@@ -1393,7 +1393,7 @@ section .container {
 
 @media (max-width: 480px) {
   .logo__header {
-    background-color: #0e0e0f99;
+    background-color: #0e0e0f70;
   }
 }
 /* Если backdrop-filter НЕ поддерживается */
@@ -1402,7 +1402,7 @@ section .container {
 ) {
   .logo__header {
     /* Более плотный фон как запасной вариант */
-    background-color: #0e0e0f99;
+    background-color: #0e0e0f70;
 
     /* Альтернативный blur через filter (если внутри нет текста) */
 
@@ -1734,7 +1734,7 @@ section .container {
     height: 600px !important;
   }
 }
-/* @media (max-width: 480px) and (max-height: 950px) {
+/* @media (min-height: 820px) and (max-height: 1000px) {
   .hero.snap-step .snap-step {
     height: 700px !important;
   }
@@ -1752,7 +1752,47 @@ section .container {
   .hero.snap-step {
     height: 950px !important;
   }
+} */
+
+@media (min-height: 820px) and (max-height: 1000px) {
+  .hero.snap-step .snap-step {
+    height: 100vh !important;
+  }
+  section.twomobile {
+    height: auto !important;
+  }
+  section.cards {
+    height: auto !important;
+  }
+  .cta .container,
+  .cta.snap-step {
+    height: 100vh !important;
+  }
+  .twomobile .snap-step,
+  .hero.snap-step {
+    height: 100vh !important;
+  }
 }
+@media (max-height: 500px) {
+  .hero.snap-step .snap-step {
+    height: 100vh !important;
+  }
+  section.twomobile {
+    height: auto !important;
+  }
+  section.cards {
+    height: auto !important;
+  }
+  .cta .container,
+  .cta.snap-step {
+    height: 100vh !important;
+  }
+  .twomobile .snap-step,
+  .hero.snap-step {
+    height: 100vh !important;
+  }
+}
+/*
 @media (max-width: 480px) and (max-height: 850px) {
   .snap-step {
     height: 700px !important;
