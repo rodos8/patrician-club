@@ -1373,10 +1373,6 @@ section .container {
   justify-content: center;
   padding: 2.4rem 0;
 
-  /* 1. Запасной фон (всегда) */
-
-  /* 2. Основной эффект с префиксами */
-
   backdrop-filter: saturate(180%) blur(0.3rem);
   -webkit-backdrop-filter: saturate(180%) blur(0.3rem);
 }
@@ -1754,7 +1750,7 @@ section .container {
   }
 } */
 
-@media (min-height: 820px) and (max-height: 1000px) {
+@media (min-height: 820px) and (max-height: 915px) {
   .hero.snap-step .snap-step {
     height: 100vh !important;
   }
