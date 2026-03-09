@@ -1377,13 +1377,13 @@ section .container {
 
   /* 2. Основной эффект с префиксами */
 
-  backdrop-filter: saturate(180%) blur(3px);
-  -webkit-backdrop-filter: saturate(180%) blur(3px);
+  backdrop-filter: saturate(180%) blur(0.3rem);
+  -webkit-backdrop-filter: saturate(180%) blur(0.3rem);
 }
 .logo__header .logo__header {
   height: 100%;
-  backdrop-filter: saturate(180%) blur(3px);
-  -webkit-backdrop-filter: saturate(180%) blur(3px);
+  backdrop-filter: saturate(180%) blur(0.3rem);
+  -webkit-backdrop-filter: saturate(180%) blur(0.3rem);
   content: "";
   z-index: -1;
 }
@@ -1398,7 +1398,7 @@ section .container {
 }
 /* Если backdrop-filter НЕ поддерживается */
 @supports not (
-  (-webkit-backdrop-filter: blur(3px)) or (backdrop-filter: blur(3px))
+  (-webkit-backdrop-filter: blur(0.3rem)) or (backdrop-filter: blur(0.3rem))
 ) {
   .logo__header {
     /* Более плотный фон как запасной вариант */
