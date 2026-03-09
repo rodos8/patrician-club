@@ -1496,7 +1496,7 @@ section .container {
   }
 }
 
-@media (min-width: 800px) and (max-width: 1025px) {
+@media (min-width: 768px) and (max-width: 1025px) {
   .twomobile__block:nth-child(1) .twomobile__list-item:last-child {
     text-align: center;
     margin: 4rem auto 0;
@@ -1506,7 +1506,7 @@ section .container {
     margin: 4rem auto 0;
   }
   .twomobile__block:nth-child(1) {
-    margin-bottom: 35rem;
+    /* margin-bottom: 35rem; */
   }
   section {
     display: flex;
@@ -1522,6 +1522,7 @@ section .container {
   }
   .cards__list-item {
     max-width: 100%;
+    width: 100%;
     height: auto;
   }
   .cards__image-wrapper {
@@ -1863,4 +1864,13 @@ section .container {
 
 .footer--visible {
   opacity: 1;
+}
+
+@media (min-height: 930px) and (max-height: 935px) {
+  .twomobile__list {
+    gap: 15rem;
+  }
+  section.twomobile {
+    height: 1750px !important;
+  }
 }
