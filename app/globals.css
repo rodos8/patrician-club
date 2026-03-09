@@ -1873,4 +1873,10 @@ section .container {
   section.twomobile {
     height: 1750px !important;
   }
+  .hero.snap-step {
+    height: 930px !important;
+  }
+  .cta.snap-step {
+    height: 930px !important;
+  }
 }
